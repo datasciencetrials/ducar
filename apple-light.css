@@ -1943,14 +1943,14 @@ table td {
 }
 .page-facets {
   display: grid;
-  grid-template-columns: repeat(8, minmax(145px, 1fr));
+  grid-template-columns: repeat(8, minmax(0, 1fr));
   gap: 8px;
   min-width: 0;
   overflow: visible;
 }
 .search-combobox {
   position: relative;
-  min-width: 145px;
+  min-width: 0;
 }
 .search-combobox-label {
   display: block;
