@@ -3,11 +3,11 @@ import { Octokit } from '@octokit/rest';
 import fs from 'node:fs';
 import path from 'node:path';
 
-const OWNER = 'networkengineringmowt-ai';
+const OWNER = 'datasciencetrials';
 const ALL_REPOS = [
-  'uganda_nrms', 'tricycles', 'uganda_npms', 'uganda_network_traffic',
-  'uganda_ducar', 'uganda_nbms', 'uganda_gis_enterprise', 'bridge_mculverts',
-  'kee', 'uganda_kee', 'uganda_kee_rss', 'uganda_ntis',
+  'roads', 'tricycles', 'pavement', 'traffic', 'uganda_network_traffic',
+  'ducar', 'system_s', 'enterprise_portal', 'bridgesandmajorculverts',
+  'kee_dashboard', 'kee',
 ];
 
 const SELF = (process.env.GITHUB_REPOSITORY || '').split('/')[1];
@@ -137,7 +137,7 @@ function compareFigures(selfFigures, repo, siblingReport) {
       const pctDiff = Math.abs(sf.value - of.value) / Math.max(sf.value, of.value);
       if (pctDiff > 0.01) {
         discrepancies.push(
-          `"${sf.raw}" (context: ...${sf.context}) vs ${repo}'s "${of.raw}" (context: ...${of.context}) — ${(pctDiff * 100).toFixed(1)}% difference`
+          `"${sf.raw}" (context: ...${sf.context}) vs ${repo}'s "${of.raw}" (context: ...${of.context}), ${(pctDiff * 100).toFixed(1)}% difference`
         );
       }
     }
@@ -180,7 +180,7 @@ async function closeStaleIssue() {
     await octokit.issues.update({ owner: OWNER, repo: SELF, issue_number: issue.number, state: 'closed' });
     await octokit.issues.createComment({
       owner: OWNER, repo: SELF, issue_number: issue.number,
-      body: `Resolved — daily audit on ${TODAY} found no outstanding issues.`,
+      body: `Resolved, daily audit on ${TODAY} found no outstanding issues.`,
     });
   }
 }
@@ -232,11 +232,11 @@ async function main() {
 
   if (problems.length === 0) {
     await closeStaleIssue();
-    console.log('Audit clean — no issues found.');
+    console.log('Audit clean, no issues found.');
     return;
   }
 
-  const lines = [`# Daily Audit Report — ${TODAY}`, '', `Site: ${URL}`, ''];
+  const lines = [`# Daily Audit Report: ${TODAY}`, '', `Site: ${URL}`, ''];
   if (self.majorTechnicalIssues.length) {
     lines.push('## Technical', ...self.majorTechnicalIssues.map((s) => `- ${s}`), '');
   }
