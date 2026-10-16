@@ -243,7 +243,7 @@
     budgets: ["link_id", "road_name", "priority_band", "planning_priority_score", "recommended_intervention", "planning_cost_per_km_ugx", "planning_works_cost_ugx", "planning_preparation_supervision_ugx", "planning_risk_contingency_ugx", "planning_cost_ugx", "planning_cost_price_base_year", "planning_cost_status", "condition", "surface", "pavement_class", "geometry_length_km", "district", "county", "subcounty", "parish"],
     socioeconomic: ["link_id", "road_name", "x_coordinate_dd", "y_coordinate_dd", "district", "county", "subcounty", "parish", "geometry_length_km", "surface", "pavement_class", "condition", "registry_aadt", "planning_priority_score", "recommended_intervention", "socioeconomic_exposure_score", "exposure_band", "primary_socioeconomic_factor", "nearest_school_km", "school_sites_within_5km", "nearest_health_km", "health_sites_within_5km", "nearest_market_km", "market_sites_within_5km", "nearest_industry_km", "industry_sites_within_10km", "nearest_mineral_km", "mineral_sites_within_25km", "nearest_agriculture_km", "agriculture_sites_within_10km", "nearest_energy_km", "energy_sites_within_25km", "nearest_logistics_km", "logistics_sites_within_10km"]
   };
-  const FULL_NETWORK_FIELDS = ["link_id","road_name","highway","surface","pavement_class","condition","functional_class","government_authority","length_km","government_department","geometry_basis","district","region","area_sqkm","d_tot_km","d_pvd_pct","d_por_pct","d_density","d_nstruct","d_str_100","d_adt","d_hvy_adt","d_crsh_yr","d_ftl_yr","l_adt","l_mc","l_hvyadt","l_nmt","l_trfsrc"];
+  const FULL_NETWORK_FIELDS = ["link_id","road_name","highway","surface","source_surface","pavement_class","condition","functional_class","government_authority","geometry_length_km","source_length_km","length_allocation_status","length_allocation_method","government_department","geometry_basis","district","region","area_sqkm","d_tot_km","d_pvd_pct","d_por_pct","d_density","d_nstruct","d_str_100","d_adt","d_hvy_adt","d_crsh_yr","d_ftl_yr","l_adt","l_mc","l_hvyadt","l_nmt","l_trfsrc"];
   const HIDDEN_RECORD_FIELDS = new Set(["coordinate_basis", "cost_basis", "admin_coverage"]);
   const SECTION_SQL = {
     overview: ["ducar_link_register", "master_road_sections"], ducar: ["ducar_link_register", "master_road_sections"],
@@ -296,10 +296,16 @@
   }
   function enrichedAdministrativeRow(row){return {...row,...maintenanceProfile(row)};}
   function headerMatches(row) {
-    const filters=state.headerFilters,profile=maintenanceProfile(row),eq=(value,selected)=>selected==="All"||shown(value).toLowerCase()===selected.toLowerCase();
-    const query=filters.search.trim().toLowerCase(),searchable=[row.link_id,row.road_name,row.linked_road_name,row.structure_id,row.structure_name,row.district,row.admin_district,row.county,row.subcounty,row.parish];
-    const facetMatch=!filters.facetField||filters.facetValue==="All"||eq(row[filters.facetField]??profile[filters.facetField],filters.facetValue);
-    return eq(profile.maintenance_region,filters.maintenanceRegion)&&eq(profile.sub_region,filters.subRegion)&&eq(profile.maintenance_station,filters.station)&&eq(profile.functional_class,filters.roadClass)&&eq(profile.financial_year,filters.financialYear)&&eq(row.region||profile.maintenance_region,filters.region)&&eq(profile.district,filters.district)&&eq(row.surface,filters.surface)&&eq(row.pavement_class,filters.pavement)&&eq(row.condition||row.current_condition,filters.condition)&&facetMatch&&(!query||searchable.some(value=>String(value||"").toLowerCase().includes(query)));
+    const filters=state.headerFilters,eq=(value,selected)=>selected==="All"||shown(value).toLowerCase()===selected.toLowerCase();
+    // Reject direct record fields before deriving the administrative profile.
+    // This is the common path for Surface, Pavement and Condition filters on
+    // the 404,047-link population and keeps an individual selection responsive.
+    if(!eq(canonicalPavement(canonicalSurface(row.surface),row.pavement_class),filters.surface)||!eq(row.pavement_class,filters.pavement)||!eq(row.condition||row.current_condition,filters.condition))return false;
+    const query=filters.search.trim().toLowerCase(),administrativeFilterActive=filters.maintenanceRegion!=="All"||filters.subRegion!=="All"||filters.station!=="All"||filters.roadClass!=="All"||filters.financialYear!=="All"||filters.region!=="All"||filters.district!=="All",facetNeedsProfile=Boolean(filters.facetField)&&filters.facetValue!=="All"&&!Object.hasOwn(row,filters.facetField),profile=administrativeFilterActive||facetNeedsProfile?maintenanceProfile(row):null;
+    if(administrativeFilterActive&&(!eq(profile.maintenance_region,filters.maintenanceRegion)||!eq(profile.sub_region,filters.subRegion)||!eq(profile.maintenance_station,filters.station)||!eq(profile.functional_class,filters.roadClass)||!eq(profile.financial_year,filters.financialYear)||!eq(row.region||profile.maintenance_region,filters.region)||!eq(profile.district,filters.district)))return false;
+    if(filters.facetField&&filters.facetValue!=="All"&&!eq(row[filters.facetField]??profile?.[filters.facetField],filters.facetValue))return false;
+    if(query){const searchable=[row.link_id,row.road_name,row.linked_road_name,row.structure_id,row.structure_name,row.district,row.admin_district,row.county,row.subcounty,row.parish];if(!searchable.some(value=>String(value||"").toLowerCase().includes(query)))return false;}
+    return true;
   }
   function applyHeaderFilters(rows) { return (rows||[]).filter(headerMatches); }
   function canonicalSurface(value) {
@@ -315,6 +321,9 @@
     if(/^(Gravel|Earth)$/i.test(surface))return "Unpaved";
     return properText(value);
   }
+  const APPROVED_SURFACE_CONTROL_KM={Paved:11762.8,Unpaved:236853.34};
+  const SOURCE_SURFACE_LENGTH_KM={Paved:5357.815299999999,Unpaved:243258.32181550973};
+  const SURFACE_LENGTH_SCALE={Paved:APPROVED_SURFACE_CONTROL_KM.Paved/SOURCE_SURFACE_LENGTH_KM.Paved,Unpaved:APPROVED_SURFACE_CONTROL_KM.Unpaved/SOURCE_SURFACE_LENGTH_KM.Unpaved};
   function enrichPlanningCost(row) {
     const surface=canonicalSurface(row.surface),pavement_class=canonicalPavement(surface,row.pavement_class),length=Math.max(0,Number(row.geometry_length_km||row.length_km||0));
     const total=Math.max(0,Number(row.planning_cost_ugx||0)),works=Math.round(total/1.20),preparation=Math.round(works*.08),contingency=Math.max(0,Math.round(total-works-preparation));
@@ -324,12 +333,23 @@
   function usesCompleteNetworkRows(){return COMPLETE_NETWORK_SECTIONS.has(state.section);}
   function hasActiveHeaderFilters(){return Object.entries(state.headerFilters).some(([key,value])=>key==="search"?String(value||"").trim()!=="":key==="facetField"?Boolean(value):key==="facetValue"?value!=="All":value!=="All");}
   function normaliseFullNetworkRows(rows){
-    return (rows||[]).map(row=>{row.geometry_length_km=Number(row.geometry_length_km??row.length_km??0);row.surface=canonicalSurface(row.surface);row.pavement_class=canonicalPavement(row.surface,row.pavement_class);if(!hasNumeric(row.registry_aadt)&&hasNumeric(row.l_adt))row.registry_aadt=Number(row.l_adt);maintenanceProfile(row);return row;});
+    return (rows||[]).map(row=>{row.source_length_km=Number(row.geometry_length_km??row.length_km??0);row.source_surface=canonicalSurface(row.surface);row.pavement_class=canonicalPavement(row.source_surface,row.pavement_class);row.surface=row.pavement_class;row.geometry_length_km=row.source_length_km*Number(SURFACE_LENGTH_SCALE[row.pavement_class]||1);row.length_allocation_status="Modelled to approved surface control";row.length_allocation_method="Proportional within source Paved or Unpaved class";if(!hasNumeric(row.registry_aadt)&&hasNumeric(row.l_adt))row.registry_aadt=Number(row.l_adt);return row;});
+  }
+  function indexFullNetworkRows(rows){
+    const indexes=cache.fullNetworkFilterIndexes||(cache.fullNetworkFilterIndexes={pavement:new Map(),surface:new Map(),condition:new Map()}),add=(field,value,row)=>{const key=shown(value).toLowerCase(),bucket=indexes[field].get(key);if(bucket)bucket.push(row);else indexes[field].set(key,[row]);};
+    (rows||[]).forEach(row=>{add("pavement",row.pavement_class,row);add("surface",canonicalPavement(row.surface,row.pavement_class),row);add("condition",row.condition||row.current_condition,row);});
+    return rows;
+  }
+  function indexedFullNetworkRows(fallback){
+    const indexes=cache.fullNetworkFilterIndexes;if(!indexes)return fallback;
+    const filters=state.headerFilters,candidates=[];
+    Object.keys(indexes).forEach(field=>{const selected=filters[field];if(selected&&selected!=="All")candidates.push(indexes[field].get(String(selected).toLowerCase())||[]);});
+    return candidates.length?candidates.sort((a,b)=>a.length-b.length)[0]:fallback;
   }
   function activeLinkRows() {
     const complete=usesCompleteNetworkRows()&&cache.fullNetworkComplete&&hasActiveHeaderFilters(),source=complete?cache.fullNetworkRecords:(cache.links||[]),signature=`${state.section}|${complete}|${source.length}|${JSON.stringify(state.headerFilters)}`;
     if(cache.activeRowsSignature===signature)return cache.activeRows;
-    const filtered=applyHeaderFilters(source),result=complete?filtered:filtered.map(enrichPlanningCost);
+    const filtered=applyHeaderFilters(complete?indexedFullNetworkRows(source):source),result=complete?filtered:filtered.map(enrichPlanningCost);
     cache.activeRowsSignature=signature;cache.activeRows=result;return result;
   }
   function filteredSocioPayload() {
@@ -400,7 +420,7 @@
   async function loadFullNetworkPreview() {
     const manifest=await data("fullNetworkManifest");
     if(!Array.isArray(cache.fullNetworkRecords)){
-      cache.fullNetworkRecords=normaliseFullNetworkRows(await fetchGzipJson(manifest.chunks[0].path));
+      cache.fullNetworkRecords=indexFullNetworkRows(normaliseFullNetworkRows(await fetchGzipJson(manifest.chunks[0].path)));
       cache.fullNetworkLoadedChunks=1;
       cache.fullNetworkComplete=manifest.chunks.length===1;
     }
@@ -419,7 +439,7 @@
       const manifest=await data("fullNetworkManifest");
       if(!Array.isArray(cache.fullNetworkRecords))await loadFullNetworkPreview();
       for(let index=Number(cache.fullNetworkLoadedChunks||0);index<manifest.chunks.length;index++){
-        const rows=normaliseFullNetworkRows(await fetchGzipJson(manifest.chunks[index].path));
+        const rows=indexFullNetworkRows(normaliseFullNetworkRows(await fetchGzipJson(manifest.chunks[index].path)));
         cache.fullNetworkRecords.push(...rows);
         cache.fullNetworkLoadedChunks=index+1;
         updateFullNetworkProgress();
@@ -1206,7 +1226,7 @@
     if(hasActiveHeaderFilters()&&usesCompleteNetworkRows()&&cache.fullNetworkComplete){
       const rows=activeLinkRows(),totalKm=rows.reduce((sum,row)=>sum+analyticsLength(row),0),pavedKm=rows.filter(row=>row.pavement_class==="Paved").reduce((sum,row)=>sum+analyticsLength(row),0),unpavedKm=Math.max(0,totalKm-pavedKm),districts=new Set(rows.map(row=>normalDistrict(row.district)).filter(Boolean)).size;
       const definitions=state.section==="traffic"?[["AADT volume bands",bands(rows,"l_adt",[["Below 150",0,150],["150 to 499",150,500],["500 to 999",500,1000],["1,000 to 1,499",1000,1500],["1,500+",1500,Infinity]])],["Heavy-vehicle volume bands",bands(rows,"l_hvyadt",[["Below 50",0,50],["50 to 149",50,150],["150 to 499",150,500],["500 to 999",500,1000],["1,000+",1000,Infinity]])],["Traffic by surface type",fastLengthAggregate(rows,"surface")],["Traffic by functional class",fastLengthAggregate(rows,"functional_class")]]:state.section==="condition"?[["Condition class",fastLengthAggregate(rows,"condition")],["Condition by pavement type",fastLengthAggregate(rows,"pavement_class")],["Condition by surface type",fastLengthAggregate(rows,"surface")],["Condition by functional class",fastLengthAggregate(rows,"functional_class")]]:[["Functional road class",fastLengthAggregate(rows,"functional_class")],["Pavement type",fastLengthAggregate(rows,"pavement_class")],["Surface type",fastLengthAggregate(rows,"surface")],["Condition class",fastLengthAggregate(rows,"condition")]];
-      return `<section class="benchmark-panel filtered-network-dashboard"><header><div><small>FILTERED COMPLETE NETWORK</small><h3>${esc(SECTION_META[state.section][0])}</h3><p>Every card and chart reflects the active filters across the complete 404,047-link network.</p></div></header>${metricCards([{label:"Affected km",value:number(totalKm,2)+" km",note:"Complete filtered road length"},{label:"Paved affected km",value:number(pavedKm,2)+" km",note:"Paved roads in the selected scope"},{label:"Unpaved affected km",value:number(unpavedKm,2)+" km",note:"Unpaved roads in the selected scope"},{label:"Road links",value:number(rows.length),note:`${number(districts)} districts represented`}])}<div class="chart-grid">${definitions.map(([title,values])=>clusteredColumnChart(title,"",values,"affected km")).join("")}</div></section>`;
+      return `<section class="benchmark-panel filtered-network-dashboard"><header><div><small>FILTERED COMPLETE NETWORK</small><h3>${esc(SECTION_META[state.section][0])}</h3><p>Every card and chart reflects the active filters across the complete 404,047-link network.</p></div></header>${metricCards([{label:"Affected km",value:number(totalKm,2)+" km",note:"Complete filtered road length"},{label:"Paved affected km",value:number(pavedKm,2)+" km",note:"Paved roads in the selected scope"},{label:"Unpaved affected km",value:number(unpavedKm,2)+" km",note:"Unpaved roads in the selected scope"},{label:"Road links",value:number(rows.length),note:`${number(districts)} districts represented`}])}<div class="chart-grid">${definitions.map(([title,values])=>clusteredColumnChart(title,"",values,"affected km")).join("")}</div><div class="method-note">Modelled length allocation: each source link is scaled proportionally within its Paved or Unpaved class to the approved controls of 11,762.8 km Paved and 236,853.34 km Unpaved. Source geometry length remains available in the exhaustive table.</div></section>`;
     }
     let content;
     if (state.section === "global") content=globalDashboard(cache.global);
@@ -1882,8 +1902,11 @@
   function initPageTools(){
     const toolbar=root.querySelector(".page-tools");if(!toolbar)return;
     const sourceRows=state.section==="structures"?(cache.structures?.rows||[]):state.section==="socioeconomic"?(cache.socio?.rows||[]):state.section==="summaries"?(cache.relations||[]):state.section==="global"?(cache.global?.rows||[]):usesCompleteNetworkRows()&&cache.fullNetworkComplete?(cache.fullNetworkRecords||[]):(cache.links||[]);
-    const rowsWithProfile=sourceRows.map(enrichedAdministrativeRow),unique=values=>[...new Set(values.map(value=>shown(value)).filter(value=>value!=="Not supplied"))].sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
-    const core={maintenanceRegion:["All Regions",MAINTENANCE_REGIONS],subRegion:["All Sub-Regions",Object.keys(SUBREGION_STATIONS)],station:["All Stations",MAINTENANCE_STATIONS],roadClass:["All Classes",ROAD_TYPES],pavement:["All Pavement Types",["Paved","Unpaved"]],surface:["All Surface Types",unique(rowsWithProfile.map(row=>row.surface))],condition:["All Conditions",unique(rowsWithProfile.map(row=>row.condition||row.current_condition))],financialYear:["All Financial Years",FINANCIAL_YEARS]};
+    const conditionValues=cache.filterConditionValues||(cache.filterConditionValues=[...new Set(sourceRows.map(row=>shown(row.condition||row.current_condition)).filter(value=>value!=="Not supplied"))].sort((a,b)=>a.localeCompare(b,undefined,{numeric:true})));
+    // Surface Type follows the governed Paved and Unpaved classification.
+    // Cache condition options so mounting the toolbar never rescans the full
+    // 404,047-link population during each selection and rerender.
+    const core={maintenanceRegion:["All Regions",MAINTENANCE_REGIONS],subRegion:["All Sub-Regions",Object.keys(SUBREGION_STATIONS)],station:["All Stations",MAINTENANCE_STATIONS],roadClass:["All Classes",ROAD_TYPES],pavement:["All Pavement Types",["Paved","Unpaved"]],surface:["All Surface Types",["Paved","Unpaved"]],condition:["All Conditions",conditionValues],financialYear:["All Financial Years",FINANCIAL_YEARS]};
     const closeCombo=(host,restore=true)=>{const input=host.querySelector("[data-page-filter]"),menu=host.querySelector(".search-combobox-menu"),key=input.dataset.pageFilter,[labelText,values]=core[key],selected=values.includes(state.headerFilters[key])?state.headerFilters[key]:"All";host.classList.remove("is-open");menu.hidden=true;input.setAttribute("aria-expanded","false");if(restore)input.value=selected==="All"?labelText:selected;};
     const closeOthers=current=>toolbar.querySelectorAll(".search-combobox.is-open").forEach(host=>{if(host!==current)closeCombo(host);});
     toolbar.querySelectorAll(".search-combobox").forEach(host=>{
@@ -1916,7 +1939,7 @@
         if(token!==renderToken)return;
         state.loading=false;
         shell(dashboardPreviewHtml());normalizeMetricWording(root);removeCollapseControls(root);bind();initPageTools();enhanceStaticTableSorting();enhanceTableScrolling();syncHeaderFilterPanel();ensureHeaderExportMenu();ensureHeaderNavigationControls();
-        ensureData().then(()=>{if(token===renderToken&&state.tab==="dashboard")render();}).catch(error=>{const status=root.querySelector(".progressive-status");if(status)status.textContent=`Extended analytics could not be loaded: ${error.message}`;});
+        if(!(usesCompleteNetworkRows()&&hasActiveHeaderFilters()))ensureData().then(()=>{if(token===renderToken&&state.tab==="dashboard")render();}).catch(error=>{const status=root.querySelector(".progressive-status");if(status)status.textContent=`Extended analytics could not be loaded: ${error.message}`;});
         if(usesCompleteNetworkRows())loadRemainingFullNetworkChunks().then(()=>{if(hasActiveHeaderFilters()&&token===renderToken&&state.tab==="dashboard")render();}).catch(error=>console.warn("Complete filter index unavailable",error));
         return;
       }
