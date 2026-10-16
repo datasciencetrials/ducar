@@ -438,10 +438,15 @@
     cache.fullNetworkLoading=(async()=>{
       const manifest=await data("fullNetworkManifest");
       if(!Array.isArray(cache.fullNetworkRecords))await loadFullNetworkPreview();
-      for(let index=Number(cache.fullNetworkLoadedChunks||0);index<manifest.chunks.length;index++){
-        const rows=indexFullNetworkRows(normaliseFullNetworkRows(await fetchGzipJson(manifest.chunks[index].path)));
-        cache.fullNetworkRecords.push(...rows);
-        cache.fullNetworkLoadedChunks=index+1;
+      const batchSize=4;
+      for(let batchStart=Number(cache.fullNetworkLoadedChunks||0);batchStart<manifest.chunks.length;batchStart+=batchSize){
+        const batchEnd=Math.min(batchStart+batchSize,manifest.chunks.length);
+        const chunks=await Promise.all(manifest.chunks.slice(batchStart,batchEnd).map(chunk=>fetchGzipJson(chunk.path)));
+        chunks.forEach((chunk,index)=>{
+          const rows=indexFullNetworkRows(normaliseFullNetworkRows(chunk));
+          cache.fullNetworkRecords.push(...rows);
+          cache.fullNetworkLoadedChunks=batchStart+index+1;
+        });
         updateFullNetworkProgress();
         await new Promise(resolve=>window.requestIdleCallback?window.requestIdleCallback(()=>resolve(),{timeout:180}):setTimeout(resolve,0));
       }
@@ -1902,7 +1907,9 @@
   function initPageTools(){
     const toolbar=root.querySelector(".page-tools");if(!toolbar)return;
     const sourceRows=state.section==="structures"?(cache.structures?.rows||[]):state.section==="socioeconomic"?(cache.socio?.rows||[]):state.section==="summaries"?(cache.relations||[]):state.section==="global"?(cache.global?.rows||[]):usesCompleteNetworkRows()&&cache.fullNetworkComplete?(cache.fullNetworkRecords||[]):(cache.links||[]);
-    const conditionValues=cache.filterConditionValues||(cache.filterConditionValues=[...new Set(sourceRows.map(row=>shown(row.condition||row.current_condition)).filter(value=>value!=="Not supplied"))].sort((a,b)=>a.localeCompare(b,undefined,{numeric:true})));
+    const observedConditionValues=sourceRows.map(row=>shown(row.condition||row.current_condition)).filter(value=>value!=="Not supplied");
+    const conditionValues=[...new Set(["Good","Fair","Poor",...(cache.filterConditionValues||[]),...observedConditionValues])].sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
+    cache.filterConditionValues=conditionValues;
     // Surface Type follows the governed Paved and Unpaved classification.
     // Cache condition options so mounting the toolbar never rescans the full
     // 404,047-link population during each selection and rerender.
