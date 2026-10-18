@@ -1897,6 +1897,7 @@
         .replace(/affected\s+road\s+length/gi,"affected km")
         .replace(/affected\s+length/gi,"affected km")
         .replace(/affected\s+km\s+km/gi,"affected km")
+        .replace(/[–—]/g," - ")
         .replace(/22[ ,]?323(?:\.109|\.11)?\s*km/gi,"248,616.14 km")
         .replace(/\b(?:as\s+)?(?:explained|described|shown|noted|set\s+out|detailed)\s+in\s+(?:section|chapter|appendix)\s+[A-Z]?\d+(?:\.\d+)*(?:\s+of\s+this\s+(?:page|report|document))?\b[,:;.]?/gi,"")
         .replace(/\b(?:see|refer\s+to)\s+(?:section|chapter|appendix)\s+[A-Z]?\d+(?:\.\d+)*\b[,:;.]?/gi,"")
