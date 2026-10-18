@@ -386,7 +386,7 @@
     return SECTION_TABS.some(([tab]) => tab === id) ? id : "dashboard";
   }
   function sectionFromTitle(title) {
-    const map = { TOP: "overview", "DUCAR Dashboard": "ducar", Network: "network", Traffic: "traffic", Condition: "condition", Structures: "structures", PIMS: "pims", "HDM-4": "hdm4", Framework: "framework", "Budgets & Prioritization": "budgets", "Priority Studio": "budgets", Global: "global", "Global Benchmarks": "global", "Socioeconomic Analysis": "socioeconomic", "Summaries & Admin Tools": "summaries", "Admin Tools": "summaries" };
+    const map = { TOP: "overview", "DUCAR Dashboard": "ducar", Network: "network", Traffic: "traffic", Condition: "condition", Structures: "structures", PIMS: "pims", "HDM-4": "hdm4", Framework: "framework", "Budgets & Prioritization": "budgets", "Priority Studio": "budgets", Global: "global", "Global Benchmarks": "global", "International Benchmarks": "global", "Socioeconomic Analysis": "socioeconomic", "Summaries & Admin Tools": "summaries", "Admin Tools": "summaries" };
     return map[title] || null;
   }
   async function data(key) {
@@ -2076,12 +2076,12 @@
     ["structures","Structures"],
     ["pims","PIMS"],
     ["hdm4","HDM-4"],
-    ["global","Global Benchmarks"],
+    ["global","International Benchmarks"],
     ["socioeconomic","Socioeconomic Analysis"],
     ["budgets","Priority Studio"],
     ["summaries","Admin Tools"]
   ];
-  const SOURCE_NAV_TITLES = {ducar:"DUCAR Dashboard",traffic:"Traffic",condition:"Condition",structures:"Structures",pims:"PIMS",hdm4:"HDM-4",global:"Global Benchmarks",socioeconomic:"Socioeconomic Analysis",budgets:"Budgets & Prioritization",summaries:"Summaries & Admin Tools"};
+  const SOURCE_NAV_TITLES = {ducar:"DUCAR Dashboard",traffic:"Traffic",condition:"Condition",structures:"Structures",pims:"PIMS",hdm4:"HDM-4",global:"International Benchmarks",socioeconomic:"Socioeconomic Analysis",budgets:"Budgets & Prioritization",summaries:"Summaries & Admin Tools"};
   function replaceNavLabel(button,label) {
     const known=new Set([...Object.values(SOURCE_NAV_TITLES),...PRIMARY_NAV.map(([,text])=>text)]),walker=document.createTreeWalker(button,NodeFilter.SHOW_TEXT);let node;
     while((node=walker.nextNode()))if(known.has(node.nodeValue.trim())){node.nodeValue=node.nodeValue.replace(node.nodeValue.trim(),label);return;}

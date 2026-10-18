@@ -43,6 +43,33 @@ function setDucar2025Data(value) {
 function setKccaData(value) {
   if (value && typeof value === "object") kccaData = Object.assign({}, value, kccaData);
 }
+
+/* The worldwide comparison section must not look like a domestic Uganda
+   reporting scope. Keep its route intact while naming it unambiguously. */
+function normaliseBenchmarkNavigation(root) {
+  var scope = root || document;
+  var buttons = Array.from(scope.querySelectorAll("button"));
+  if (scope.matches && scope.matches("button")) buttons.unshift(scope);
+  buttons.forEach(function (button) {
+    var label = (button.textContent || "").trim();
+    if (label !== "Global" && label !== "Global Benchmarks") return;
+    var walker = document.createTreeWalker(button, NodeFilter.SHOW_TEXT);
+    var node;
+    while ((node = walker.nextNode())) {
+      if (node.nodeValue.trim() === label) node.nodeValue = "International Benchmarks";
+    }
+    button.title = "International Benchmarks";
+    button.setAttribute("aria-label", "International Benchmarks");
+  });
+}
+new MutationObserver(function (records) {
+  records.forEach(function (record) {
+    record.addedNodes.forEach(function (node) {
+      if (node.nodeType === Node.ELEMENT_NODE) normaliseBenchmarkNavigation(node);
+    });
+  });
+}).observe(document.documentElement, { childList: true, subtree: true });
+document.addEventListener("DOMContentLoaded", function () { normaliseBenchmarkNavigation(document); });
 </script>
 <script type="module" crossorigin src="./assets/index-gYbOrP4D.js?v=20260820-hotosm-vehicular-12"></script>
 <link rel="stylesheet" crossorigin href="./assets/index-ByMP9Ldu.css" />
