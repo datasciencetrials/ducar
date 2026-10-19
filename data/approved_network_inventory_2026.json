@@ -8,7 +8,7 @@
     "vehicular_source_features": 404047,
     "national_roads_km": 21302.0,
     "paved_km": 11762.8,
-    "authoritative_bridges": 552,
+    "authoritative_bridges": 546,
     "scope": "Vehicular road geometry only; pedestrian-only and proposed ways are excluded",
     "source": "MoWT corrected 30-part full vehicular network alignment, August 2026"
   },
@@ -54,7 +54,7 @@
     "pavement_class_categories": 2
   },
   "calculation_policy": [
-    "Use 248,616.14 km, 21,302 km of National Roads, 11,762.8 km of paved roads, 552 bridges and 404,047 analysed links for public reporting.",
+    "Use 248,616.14 km, 21,302 km of National Roads, 11,762.8 km of paved roads, 546 bridges and 404,047 analysed links for public reporting.",
     "Use all 404,047 corrected vehicular ways for national geometry, functional class, pavement, condition, administrative and map analytics.",
     "Use the governed web register for Link-ID, traffic, structures, cost and intervention analytics that require verified DUCAR relations.",
     "Show the denominator and scope beside any calculation that could otherwise be confused with the approved inventory.",
@@ -70,7 +70,7 @@
     "authoritative_source_features": 404047,
     "classification_remainder_label": "No remainder; corrected classifications are complete",
     "geometry_rule": "Do not scale, clone or fabricate geometry to manufacture agreement with the approved inventory.",
-    "public_reporting_rule": "Public dashboards use the approved baseline of 248,616.14 km, including 21,302 km of National Roads and 11,762.8 km of paved roads, together with 552 bridges and 404,047 analysed links. Technical source-verification coverage remains in Admin Tools.",
+    "public_reporting_rule": "Public dashboards use the approved baseline of 248,616.14 km, including 21,302 km of National Roads and 11,762.8 km of paved roads, together with 546 bridges and 404,047 analysed links. Technical source-verification coverage remains in Admin Tools.",
     "high_cardinality_rule": "Complete dimensions remain available in tables and exports rather than selective charts.",
     "methodology_note": "The authoritative public total is the rounded sum of length_km across all 404,047 Road_Segment_Master records; pavement is the complete reconciled surface classification."
   },
@@ -86,14 +86,14 @@
     "method": "National Road is preserved directly from corrected FUNC_CLASS within the full vehicular network."
   },
   "pavement_reconciliation_2026": {
-    "source_layer": "DUCAR_ArcGIS_Pro_2026.gdb/Road_Segment_Master",
-    "source_record_count": 404047,
-    "source_length_km": 248616.148981,
-    "paved_record_count": 60607,
-    "paved_length_km": 17174.676417,
-    "unpaved_record_count": 343440,
-    "unpaved_length_km": 231441.472564,
-    "surface_pavement_contradictions": 0,
-    "status": "PASS"
+    "approved_public_total_km": 248616.14,
+    "approved_public_paved_km": 11762.8,
+    "approved_public_unpaved_km": 236853.34,
+    "surface_type_categories": [
+      "Paved",
+      "Unpaved"
+    ],
+    "status": "APPROVED_PUBLIC_BASELINE",
+    "methodology_note": "Public reporting uses the approved baseline. Detailed technical source reconciliation is retained outside public reporting and must not replace the approved Paved and Unpaved totals."
   }
 }

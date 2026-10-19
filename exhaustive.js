@@ -177,7 +177,7 @@
   };
   const REGION_CENTROIDS = { Central: { lat: 0.7, lng: 31.8 }, Eastern: { lat: 1.3, lng: 33.9 }, Northern: { lat: 2.8, lng: 32.6 }, Western: { lat: -0.3, lng: 30.4 } };
   const UGANDA_CENTROID = { lat: 1.3733, lng: 32.2903 };
-  const CONFIRMED_NETWORK_FALLBACK = { length_km: 248616.14, national_road_km: 21302, paved_km: 11762.8, bridges: 552, links: 404047, districts: 135 };
+  const CONFIRMED_NETWORK_FALLBACK = { length_km: 248616.14, national_road_km: 21302, paved_km: 11762.8, bridges: 546, links: 404047, districts: 135 };
   const UGANDA_LAND_AREA_SQKM = 200520;
   const MAINTENANCE_REGIONS = ["Central","Eastern","North Eastern","Northern","Southern","Western"];
   const MAINTENANCE_STATIONS = ["Arua","Fort Portal","Gulu","Hoima","Ibanda","Jinja","Kabale","Kampala","Kasese","Kitgum","Kotido","Lira","Luwero","Masaka","Masindi","Mbale","Mbarara","Moroto","Moyo","Mpigi","Mubende","Soroti","Tororo"];
@@ -267,9 +267,9 @@
   function esc(value) { return String(value).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
   function shown(value) {
     if (value === null || value === undefined || value === "") return "Not supplied";
-    if (Array.isArray(value) || typeof value === "object") return JSON.stringify(value);
+    if (Array.isArray(value) || typeof value === "object") return JSON.stringify(value).replace(/[\u2013\u2014]/g, " - ");
     if (typeof value === "boolean") return value ? "Yes" : "No";
-    return String(value);
+    return String(value).replace(/[\u2013\u2014]/g, " - ");
   }
   function normalDistrict(value){return properText(value).replace(/^Sembabule$/i,"Ssembabule").replace(/^Luweero$/i,"Luwero");}
   function normalStation(value){return properText(value).replace(/^Fortportal$/i,"Fort Portal").replace(/^Luweero$/i,"Luwero");}
@@ -363,7 +363,7 @@
     return {...source,rows,class_summary:summary("structure_class"),condition_summary:summary("current_condition"),risk_summary:summary("risk_band"),metadata:{...(source.metadata||{}),structure_occurrences:rows.length,linked_structure_occurrences:rows.filter(row=>shown(row.link_id)!=="Not supplied").length,road_length_with_structures_km:rows.reduce((sum,row)=>sum+Number(row.allocated_road_length_km||0),0)}};
   }
   const DISPLAY_ACRONYMS={aadt:"AADT",pcu:"PCU",adt:"ADT",id:"ID",ids:"IDs",km:"km",kmh:"km/h",dd:"DD",ugx:"UGX",kcca:"KCCA",ducar:"DUCAR",pims:"PIMS",hdm4:"HDM-4",osm:"OSM",hotosm:"HOTOSM",sql:"SQL",gis:"GIS",mowt:"MoWT",wgs84:"WGS84"};
-  const FIELD_LABELS={planning_cost_per_km_ugx:"Planning Cost per km (UGX/km)",planning_unit_cost_ugx_km:"Planning Unit Cost (UGX/km)",planning_works_cost_ugx:"Planning Works Cost (UGX)",planning_preparation_supervision_ugx:"Preparation and Supervision (UGX)",planning_risk_contingency_ugx:"Risk Contingency (UGX)",planning_cost_ugx:"Total Planning Allowance (UGX)",geometry_length_km:"Geometry Length (km)",source_length_km:"Source Length (km)",allocated_road_length_km:"Allocated Road Length (km)"};
+  const FIELD_LABELS={planning_cost_per_km_ugx:"Planning Cost per km (UGX/km)",planning_unit_cost_ugx_km:"Planning Unit Cost (UGX/km)",planning_works_cost_ugx:"Planning Works Cost (UGX)",planning_preparation_supervision_ugx:"Preparation and Supervision (UGX)",planning_risk_contingency_ugx:"Risk Contingency (UGX)",planning_cost_ugx:"Total Planning Allowance (UGX)",geometry_length_km:"Geometry Length (km)",source_length_km:"Source Length (km)",allocated_road_length_km:"Allocated Road Length (km)",pavement_class:"Surface Type",surface:"Pavement Material"};
   function isLengthField(field){return /(^|_)(length|distance|chainage)_km$/.test(String(field))||/^(length_km|geometry_length_km|covered_length_km|allocated_road_length_km)$/.test(String(field));}
   function label(value) { const key=String(value);if(FIELD_LABELS[key])return FIELD_LABELS[key];let result=key.replaceAll("_", " ").split(/\s+/).map(word=>DISPLAY_ACRONYMS[word.toLowerCase()]||word.charAt(0).toUpperCase()+word.slice(1).toLowerCase()).join(" ");if(isLengthField(key))result=result.replace(/\s+km$/i," (km)");return result; }
   function properText(value) {
@@ -915,6 +915,7 @@
     return (cache.hotosmAnalysis?.summaries?.[dimension]||[]).map(row=>({name:properText(row.category),value:Number(row.length_km||0),length:Number(row.length_km||0),count:Number(row.feature_count||0)}));
   }
   function hotosmLength(dimension,category) {
+    if(dimension==="pavement")return Number(hotosmValues("pavement").find(row=>row.name===category)?.length||0);
     return Number((cache.hotosmAnalysis?.summaries?.[dimension]||[]).find(row=>row.category===category)?.length_km||0);
   }
   function authoritativeNetworkOverview() {
@@ -1272,7 +1273,7 @@
       metrics=[{label:"Total road inventory",value:number(confirmed.length_km,2)+" km",note:"Complete reporting denominator"},{label:"Good affected length",value:number(value("Good"),1)+" km",note:"Complete classification"},{label:"Fair affected length",value:number(value("Fair"),1)+" km",note:"Complete classification"},{label:"Poor affected length",value:number(value("Poor"),1)+" km",note:"Complete classification"}];
       charts=[barChart("Condition classification","Complete Good, Fair and Poor road length.",condition,"affected km",COLORS[1]),barChart("Condition by pavement class","Complete Paved and Unpaved road length.",hotosmValues("pavement"),"affected km",COLORS[2])];
     }else if(state.section==="structures"){
-      metrics=[{label:"Authoritative Bridges",value:number(confirmed.bridges||552),note:"Approved public baseline"},{label:"Total road inventory",value:number(confirmed.length_km,2)+" km",note:"Complete network denominator"},{label:"Paved road length",value:number(paved,1)+" km",note:"Bituminous + Concrete"},{label:"Unpaved road length",value:number(unpaved,2)+" km",note:"Gravel + Earth"}];
+      metrics=[{label:"Authoritative Bridges",value:number(confirmed.bridges||546),note:"Approved public baseline"},{label:"Total road inventory",value:number(confirmed.length_km,2)+" km",note:"Complete network denominator"},{label:"Paved road length",value:number(paved,1)+" km",note:"Bituminous + Concrete"},{label:"Unpaved road length",value:number(unpaved,2)+" km",note:"Gravel + Earth"}];
     }
     return `<section class="benchmark-panel progressive-dashboard"><header><div><small>${esc(SECTION_META[state.section][0])}</small><h3>${esc(SECTION_META[state.section][0])} dashboard</h3><p>Essential network statistics are available now. Extended interactive analytics continue loading in the background.</p></div></header>${metricCards(metrics)}<div class="chart-grid">${charts.join("")}</div><div class="progressive-status" role="status">Loading extended analytics without blocking this page</div></section>`;
   }
