@@ -126,21 +126,40 @@ async function fetchSiblingLatestReport(repo) {
 function compareFigures(selfFigures, repo, siblingReport) {
   const discrepancies = [];
   if (!siblingReport || !siblingReport.accuracy || !siblingReport.accuracy.extractedFigures) return discrepancies;
-  for (const sf of selfFigures) {
-    const ctxWords = sf.context.toLowerCase().match(/[a-z]{4,}/g) || [];
-    if (ctxWords.length === 0) continue;
-    for (const of of siblingReport.accuracy.extractedFigures) {
-      const octxWords = (of.context || '').toLowerCase().match(/[a-z]{4,}/g) || [];
-      const shared = ctxWords.filter((w) => octxWords.includes(w));
-      if (shared.length < 2) continue;
-      if (sf.value === 0 || of.value === 0) continue;
-      const pctDiff = Math.abs(sf.value - of.value) / Math.max(sf.value, of.value);
-      if (pctDiff > 0.01) {
-        discrepancies.push(
-          `"${sf.raw}" (context: ...${sf.context}) vs ${repo}'s "${of.raw}" (context: ...${of.context}), ${(pctDiff * 100).toFixed(1)}% difference`
-        );
-      }
+  const metricKey = (figure) => {
+    const context = String(figure.context || '').toLowerCase();
+    if (context.includes('paved') && context.includes('unpaved')) return null;
+    if (/national\s+roads?/.test(context)) return 'national_roads';
+    if (/total\s+network|network\s+total/.test(context)) return 'total_network';
+    if (/\bunpaved\b/.test(context)) return 'unpaved';
+    if (/\bpaved\b/.test(context)) return 'paved';
+    return null;
+  };
+  const grouped = (figures) => {
+    const result = new Map();
+    for (const figure of figures) {
+      const key = metricKey(figure);
+      if (!key || !Number.isFinite(figure.value) || figure.value <= 0) continue;
+      if (!result.has(key)) result.set(key, []);
+      result.get(key).push(figure);
     }
+    return result;
+  };
+  const selfMetrics = grouped(selfFigures);
+  const siblingMetrics = grouped(siblingReport.accuracy.extractedFigures);
+  for (const [metric, selfItems] of selfMetrics) {
+    const siblingItems = siblingMetrics.get(metric);
+    if (!siblingItems || siblingItems.length === 0) continue;
+    const matchingPairExists = selfItems.some((sf) => siblingItems.some((other) =>
+      Math.abs(sf.value - other.value) / Math.max(sf.value, other.value) <= 0.01
+    ));
+    if (matchingPairExists) continue;
+    const sf = selfItems[0];
+    const other = siblingItems[0];
+    const pctDiff = Math.abs(sf.value - other.value) / Math.max(sf.value, other.value);
+    discrepancies.push(
+      `${metric}: "${sf.raw}" (context: ...${sf.context}) vs ${repo}'s "${other.raw}" (context: ...${other.context}), ${(pctDiff * 100).toFixed(1)}% difference`
+    );
   }
   return discrepancies;
 }
