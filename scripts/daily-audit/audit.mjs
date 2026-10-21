@@ -76,6 +76,7 @@ async function auditSelf() {
         value: parseFloat(m[1].replace(/,/g, '')),
         raw: m[0],
         context: bodyText.slice(start, m.index).trim().slice(-40),
+        afterContext: bodyText.slice(m.index + m[0].length, m.index + m[0].length + 40).trim().slice(0, 40),
       });
     }
 
@@ -127,7 +128,8 @@ function compareFigures(selfFigures, repo, siblingReport) {
   const discrepancies = [];
   if (!siblingReport || !siblingReport.accuracy || !siblingReport.accuracy.extractedFigures) return discrepancies;
   const metricKey = (figure) => {
-    const context = String(figure.context || '').toLowerCase();
+    if (!Object.prototype.hasOwnProperty.call(figure, 'afterContext')) return null;
+    const context = String(figure.afterContext || '').toLowerCase();
     if (context.includes('paved') && context.includes('unpaved')) return null;
     if (/national\s+roads?/.test(context)) return 'national_roads';
     if (/total\s+network|network\s+total/.test(context)) return 'total_network';
