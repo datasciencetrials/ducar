@@ -12,7 +12,7 @@
     relations: "./data/ducar_link_admin_relations.json.gz?v=20260930-fast-load-1",
     global: "./data/global_country_matrix.json",
     governance: "./data/global_local_road_governance.json",
-    inventory: "./data/approved_network_inventory_2026.json",
+    inventory: "./data/approved_network_inventory_2026.json?v=20261028-fy27-552",
     database: "./data/ducar_database_catalog.json",
     mindmap: "./data/ducar_site_mind_map.json",
     socio: "./data/ducar_socioeconomic_link_analysis.json.gz?v=20260930-fast-load-1",
