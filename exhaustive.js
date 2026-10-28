@@ -177,7 +177,7 @@
   };
   const REGION_CENTROIDS = { Central: { lat: 0.7, lng: 31.8 }, Eastern: { lat: 1.3, lng: 33.9 }, Northern: { lat: 2.8, lng: 32.6 }, Western: { lat: -0.3, lng: 30.4 } };
   const UGANDA_CENTROID = { lat: 1.3733, lng: 32.2903 };
-  const CONFIRMED_NETWORK_FALLBACK = { length_km: 248616.14, national_road_km: 21302, paved_km: 11762.8, bridges: 546, links: 404047, districts: 135 };
+  const CONFIRMED_NETWORK_FALLBACK = { length_km: 248616.14, national_road_km: 21302, paved_km: 11762.8, bridges: 552, links: 404047, districts: 135 };
   const UGANDA_LAND_AREA_SQKM = 200520;
   const MAINTENANCE_REGIONS = ["Central","Eastern","North Eastern","Northern","Southern","Western"];
   const MAINTENANCE_STATIONS = ["Arua","Fort Portal","Gulu","Hoima","Ibanda","Jinja","Kabale","Kampala","Kasese","Kitgum","Kotido","Lira","Luwero","Masaka","Masindi","Mbale","Mbarara","Moroto","Moyo","Mpigi","Mubende","Soroti","Tororo"];
@@ -1274,7 +1274,7 @@
       metrics=[{label:"Total road inventory",value:number(confirmed.length_km,2)+" km",note:"Complete reporting denominator"},{label:"Good affected length",value:number(value("Good"),1)+" km",note:"Complete classification"},{label:"Fair affected length",value:number(value("Fair"),1)+" km",note:"Complete classification"},{label:"Poor affected length",value:number(value("Poor"),1)+" km",note:"Complete classification"}];
       charts=[barChart("Condition classification","Complete Good, Fair and Poor road length.",condition,"affected km",COLORS[1]),barChart("Condition by Surface Type","Complete Paved and Unpaved road length.",hotosmValues("pavement"),"affected km",COLORS[2])];
     }else if(state.section==="structures"){
-      metrics=[{label:"Authoritative Bridges",value:number(confirmed.bridges||546),note:"Approved public baseline"},{label:"Total road inventory",value:number(confirmed.length_km,2)+" km",note:"Complete network denominator"},{label:"Paved road length",value:number(paved,1)+" km",note:"Bituminous + Concrete"},{label:"Unpaved road length",value:number(unpaved,2)+" km",note:"Gravel + Earth"}];
+      metrics=[{label:"Authoritative Bridges",value:number(confirmed.bridges||552),note:"Approved FY 2026/27 baseline"},{label:"Total road inventory",value:number(confirmed.length_km,2)+" km",note:"Complete network denominator"},{label:"Paved road length",value:number(paved,1)+" km",note:"Bituminous + Concrete"},{label:"Unpaved road length",value:number(unpaved,2)+" km",note:"Gravel + Earth"}];
     }
     return `<section class="benchmark-panel progressive-dashboard"><header><div><small>${esc(SECTION_META[state.section][0])}</small><h3>${esc(SECTION_META[state.section][0])} dashboard</h3><p>Essential network statistics are available now. Extended interactive analytics continue loading in the background.</p></div></header>${metricCards(metrics)}<div class="chart-grid">${charts.join("")}</div><div class="progressive-status" role="status">Loading extended analytics without blocking this page</div></section>`;
   }
