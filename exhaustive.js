@@ -24,8 +24,8 @@
     hotosmDetailManifest: "./data/hotosm_detail_tiles_manifest.json?v=20260831-mowt-seven-classes-1",
     hotosmAnalysis: "./data/hotosm_vehicular_analysis.json?v=20260831-mowt-seven-classes-1",
     arcgisReady: "./data/arcgis_ready_complete_network_reconciliation_2026.json?v=20260910-arcgis-ready-1",
-    fullNetworkRecords: "./data/hotosm_vehicular_link_attributes.json.gz?v=20260831-mowt-seven-classes-1",
-    fullNetworkManifest: "./data/full_network_chunks_manifest.json?v=20260925-progressive-1",
+    fullNetworkRecords: "./data/hotosm_vehicular_link_attributes.json.gz?v=20261030-public-status",
+    fullNetworkManifest: "./data/full_network_chunks_manifest.json?v=20261030-public-status",
     nationalMap: "./data/uganda_national_roads_2026.geojson.gz?v=20260924-national-register-actual-1",
     nationalAudit: "./data/national_road_accuracy_audit_2026.json?v=20260924-national-register-actual-1"
   };
@@ -425,7 +425,9 @@
     return cache[key]||pendingData[key];
   }
   async function fetchGzipJson(path) {
-    const response=await fetch(path);
+    const url=new URL(path,location.href);
+    url.searchParams.set("v","20261030-public-status");
+    const response=await fetch(url);
     if(!response.ok)throw new Error("Unable to load "+path);
     if(typeof DecompressionStream==="undefined")throw new Error("This browser does not support progressive compressed records");
     return new Response(response.body.pipeThrough(new DecompressionStream("gzip"))).json();

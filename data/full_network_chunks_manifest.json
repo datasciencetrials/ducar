@@ -31,7 +31,8 @@
     "l_mc",
     "l_hvyadt",
     "l_nmt",
-    "l_trfsrc"
+    "traffic_value_status",
+    "traffic_method_public"
   ],
   "chunks": [
     {
