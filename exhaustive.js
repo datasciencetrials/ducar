@@ -212,7 +212,7 @@
     overview: ["National DUCAR Overview", "Whole-register coverage, condition, pavement, traffic and planning status."],
     ducar: ["National DUCAR Overview", "Mapped DUCAR link governance, inventory completeness and planning readiness."],
     network: ["Network & Pavement Structure", "Link geometry, administrative hierarchy, pavement class and length quality."],
-    traffic: ["Traffic Intelligence", "Exact-match AADT, PCU and speed reporting for every mapped DUCAR link."],
+    traffic: ["Traffic Intelligence", "AADT, PCU and speed reporting with observed, modelled and unavailable values distinguished."],
     condition: ["Road Condition", "Condition, surface risk and intervention requirements for every mapped link."],
     structures: ["Structures · Bridges & Major Culverts", "Bridge, culvert, drift, condition, chainage, intervention and linked-road exposure reporting."],
     pims: ["PIMS Planning", "Planning priority, intervention pipeline and investment-screening attributes."],
@@ -226,7 +226,7 @@
   const LINK_FIELDS = [
     "link_id", "road_name", "established_route_name", "start_place_name", "end_place_name", "x_coordinate_dd", "y_coordinate_dd", "district", "county", "subcounty", "parish",
     "surface", "pavement_class", "condition", "source_length_km", "geometry_length_km",
-    "registry_speed_kmh", "registry_aadt", "registry_pcu", "condition_risk",
+    "registry_speed_kmh", "registry_aadt", "traffic_value_status", "traffic_method_public", "registry_pcu", "condition_risk",
     "surface_risk", "planning_priority_score", "priority_band", "priority_basis", "recommended_intervention",
     "planning_unit_cost_ugx_km", "planning_cost_per_km_ugx", "planning_works_cost_ugx", "planning_preparation_supervision_ugx", "planning_risk_contingency_ugx", "planning_cost_ugx", "planning_cost_price_base_year", "planning_cost_status"
   ];
@@ -234,12 +234,12 @@
     overview: LINK_FIELDS,
     ducar: ["link_id", "road_name", "district", "county", "subcounty", "parish", "surface", "pavement_class", "condition", "geometry_length_km", "registry_aadt", "registry_pcu", "planning_priority_score", "priority_band", "recommended_intervention", "planning_cost_per_km_ugx", "planning_cost_ugx"],
     network: ["link_id", "road_name", "surface", "pavement_class", "source_length_km", "geometry_length_km", "district", "county", "subcounty", "parish", "registry_aadt", "condition", "recommended_intervention"],
-    traffic: ["link_id", "road_name", "registry_aadt", "registry_pcu", "registry_speed_kmh", "geometry_length_km", "surface", "pavement_class", "condition", "district", "county", "subcounty", "parish", "planning_priority_score", "recommended_intervention"],
+    traffic: ["link_id", "road_name", "registry_aadt", "traffic_value_status", "traffic_method_public", "registry_pcu", "registry_speed_kmh", "geometry_length_km", "surface", "pavement_class", "condition", "district", "county", "subcounty", "parish", "planning_priority_score", "recommended_intervention"],
     condition: ["link_id", "road_name", "condition", "surface", "pavement_class", "condition_risk", "surface_risk", "recommended_intervention", "planning_priority_score", "priority_band", "geometry_length_km", "district", "county", "subcounty", "parish", "planning_cost_ugx"],
     structures: ["structure_id", "link_id", "linked_road_name", "x_coordinate_dd", "y_coordinate_dd", "district", "structure_name", "structure_location", "chainage_km", "structure_class", "structure_type", "structure_age", "current_condition", "risk_band", "last_major_works", "last_major_work_year", "remarks", "recommended_intervention", "programme_cost_ugx", "linked_road_length_km", "allocated_road_length_km", "link_match_score", "linkage_quality", "map_location_method", "source_occurrence_index", "source_occurrence_count", "source_file", "source_sheet", "source_row"],
     pims: ["link_id", "road_name", "priority_band", "planning_priority_score", "priority_basis", "recommended_intervention", "planning_cost_per_km_ugx", "planning_works_cost_ugx", "planning_preparation_supervision_ugx", "planning_risk_contingency_ugx", "planning_cost_ugx", "planning_cost_price_base_year", "condition", "surface", "pavement_class", "geometry_length_km", "district", "county", "subcounty", "parish"],
-    hdm4: ["link_id", "road_name", "geometry_length_km", "source_length_km", "registry_speed_kmh", "registry_aadt", "registry_pcu", "surface", "pavement_class", "condition", "planning_priority_score", "recommended_intervention", "planning_cost_per_km_ugx", "planning_cost_ugx", "planning_cost_price_base_year"],
-    framework: ["link_id", "road_name", "district", "county", "subcounty", "parish", "surface", "pavement_class", "condition", "geometry_length_km", "registry_aadt", "planning_priority_score", "priority_band", "recommended_intervention", "priority_basis"],
+    hdm4: ["link_id", "road_name", "geometry_length_km", "source_length_km", "registry_speed_kmh", "registry_aadt", "traffic_value_status", "registry_pcu", "surface", "pavement_class", "condition", "planning_priority_score", "recommended_intervention", "planning_cost_per_km_ugx", "planning_cost_ugx", "planning_cost_price_base_year"],
+    framework: ["link_id", "road_name", "district", "county", "subcounty", "parish", "surface", "pavement_class", "condition", "geometry_length_km", "registry_aadt", "traffic_value_status", "planning_priority_score", "priority_band", "recommended_intervention", "priority_basis"],
     budgets: ["link_id", "road_name", "priority_band", "planning_priority_score", "recommended_intervention", "planning_cost_per_km_ugx", "planning_works_cost_ugx", "planning_preparation_supervision_ugx", "planning_risk_contingency_ugx", "planning_cost_ugx", "planning_cost_price_base_year", "planning_cost_status", "condition", "surface", "pavement_class", "geometry_length_km", "district", "county", "subcounty", "parish"],
     socioeconomic: ["link_id", "road_name", "x_coordinate_dd", "y_coordinate_dd", "district", "county", "subcounty", "parish", "geometry_length_km", "surface", "pavement_class", "condition", "registry_aadt", "planning_priority_score", "recommended_intervention", "socioeconomic_exposure_score", "exposure_band", "primary_socioeconomic_factor", "nearest_school_km", "school_sites_within_5km", "nearest_health_km", "health_sites_within_5km", "nearest_market_km", "market_sites_within_5km", "nearest_industry_km", "industry_sites_within_10km", "nearest_mineral_km", "mineral_sites_within_25km", "nearest_agriculture_km", "agriculture_sites_within_10km", "nearest_energy_km", "energy_sites_within_25km", "nearest_logistics_km", "logistics_sites_within_10km"]
   };
@@ -327,13 +327,26 @@
   function enrichPlanningCost(row) {
     const surface=canonicalSurface(row.surface,row.pavement_class),pavement_class=canonicalPavement(surface,row.pavement_class),length=Math.max(0,Number(row.geometry_length_km||row.length_km||0));
     const total=Math.max(0,Number(row.planning_cost_ugx||0)),works=Math.round(total/1.20),preparation=Math.round(works*.08),contingency=Math.max(0,Math.round(total-works-preparation));
-    return {...enrichedAdministrativeRow(row),surface,pavement_class,planning_cost_per_km_ugx:length>0?Math.round(total/length):0,planning_works_cost_ugx:works,planning_preparation_supervision_ugx:preparation,planning_risk_contingency_ugx:contingency,planning_cost_price_base_year:2026,planning_cost_status:"Screening Allowance"};
+    return {...enrichedAdministrativeRow(row),surface,pavement_class,traffic_value_status:trafficValueStatus(row),traffic_method_public:publicTrafficMethod(row),planning_cost_per_km_ugx:length>0?Math.round(total/length):0,planning_works_cost_ugx:works,planning_preparation_supervision_ugx:preparation,planning_risk_contingency_ugx:contingency,planning_cost_price_base_year:2026,planning_cost_status:"Screening Allowance"};
   }
   const COMPLETE_NETWORK_SECTIONS=new Set(["overview","ducar","network","traffic","condition","hdm4"]);
   function usesCompleteNetworkRows(){return COMPLETE_NETWORK_SECTIONS.has(state.section);}
   function hasActiveHeaderFilters(){return Object.entries(state.headerFilters).some(([key,value])=>key==="search"?String(value||"").trim()!=="":key==="facetField"?Boolean(value):key==="facetValue"?value!=="All":value!=="All");}
   function normaliseFullNetworkRows(rows){
-    return (rows||[]).map(row=>{const rawSurface=properText(row.surface),sourceRecognised=!/^(?:Not Reported|Not supplied|Paved|Unpaved|Surface|Road|Footway|Residential|1|2|G)$/i.test(rawSurface);row.source_length_km=Number(row.geometry_length_km??row.length_km??0);row.source_surface=rawSurface;row.pavement_class=canonicalPavement(rawSurface,row.pavement_class);row.surface=canonicalSurface(rawSurface,row.pavement_class);row.pavement_material_status=sourceRecognised?"Normalised from source surface":"Assigned";row.pavement_material_method=sourceRecognised?"Source surface mapped to Bituminous, Concrete, Gravel or Earth":"Assigned from governed Paved or Unpaved Surface Type because source material was unavailable";row.geometry_length_km=row.source_length_km*Number(SURFACE_LENGTH_SCALE[row.pavement_class]||1);row.length_allocation_status="Modelled to approved surface control";row.length_allocation_method="Proportional within source Paved or Unpaved class";if(!hasNumeric(row.registry_aadt)&&hasNumeric(row.l_adt))row.registry_aadt=Number(row.l_adt);return row;});
+    return (rows||[]).map(row=>{const rawSurface=properText(row.surface),sourceRecognised=!/^(?:Not Reported|Not supplied|Paved|Unpaved|Surface|Road|Footway|Residential|1|2|G)$/i.test(rawSurface);row.source_length_km=Number(row.geometry_length_km??row.length_km??0);row.source_surface=rawSurface;row.pavement_class=canonicalPavement(rawSurface,row.pavement_class);row.surface=canonicalSurface(rawSurface,row.pavement_class);row.pavement_material_status=sourceRecognised?"Normalised from source surface":"Assigned";row.pavement_material_method=sourceRecognised?"Source surface mapped to Bituminous, Concrete, Gravel or Earth":"Assigned from governed Paved or Unpaved Surface Type because source material was unavailable";row.geometry_length_km=row.source_length_km*Number(SURFACE_LENGTH_SCALE[row.pavement_class]||1);row.length_allocation_status="Modelled to approved surface control";row.length_allocation_method="Proportional within source Paved or Unpaved class";if(!hasNumeric(row.registry_aadt)&&hasNumeric(row.l_adt))row.registry_aadt=Number(row.l_adt);row.traffic_value_status=trafficValueStatus(row);row.traffic_method_public=publicTrafficMethod(row);return row;});
+  }
+  function trafficValueStatus(row) {
+    if(!hasNumeric(row.registry_aadt)&&!hasNumeric(row.l_adt))return "Not supplied";
+    const status=String(row.traffic_value_status||row.l_trfsrc||"").toLowerCase();
+    if(/modelled|modeled|estimated|assigned|projected/.test(status))return "Modelled";
+    if(/observed|real|measured/.test(status))return "Observed";
+    return "Status not supplied";
+  }
+  function publicTrafficMethod(row) {
+    const status=trafficValueStatus(row);
+    if(status==="Observed")return "Observed AADT";
+    if(status==="Modelled")return /Traffic-ET/i.test(String(row.traffic_model_id||""))?"Extra Trees ensemble estimate using spatial, administrative, pavement, condition and priority inputs":"Modelled AADT; calibration method not recorded in network extract";
+    return "Method not supplied";
   }
   function indexFullNetworkRows(rows){
     const indexes=cache.fullNetworkFilterIndexes||(cache.fullNetworkFilterIndexes={pavement:new Map(),surface:new Map(),condition:new Map()}),add=(field,value,row)=>{const key=shown(value).toLowerCase(),bucket=indexes[field].get(key);if(bucket)bucket.push(row);else indexes[field].set(key,[row]);};
@@ -780,7 +793,9 @@
     return `<article class="matrix-card"><h3>Condition × pavement classification matrix</h3><p>Complete cumulative road-length cross-tabulation. Gravel/Earth = Unpaved; Bituminous/Concrete = Paved.</p><div class="matrix-grid" style="grid-template-columns:170px repeat(3,minmax(105px,1fr))"><div class="matrix-cell head">Condition</div>${pavements.map(x => `<div class="matrix-cell head">${x}</div>`).join("")}${conditions.map((condition,i) => `<div class="matrix-cell row-head">${condition}</div>${cells[i].map(value => `<div class="matrix-cell">${number(value,1)} km</div>`).join("")}`).join("")}</div><div class="chart-legend"><span class="legend-key"><i class="legend-swatch" style="background:#30d158"></i>Paved: Bituminous + Concrete</span><span class="legend-key"><i class="legend-swatch" style="background:#ff9f0a"></i>Unpaved: Gravel + Earth</span></div></article>`;
   }
   function linkDashboard(rows) {
-    const measured = rows.filter(row => typeof row.registry_aadt === "number").length;
+    const measured = rows.filter(row => trafficValueStatus(row) === "Observed").length;
+    const modelled = rows.filter(row => trafficValueStatus(row) === "Modelled").length;
+    const available = rows.filter(row => typeof row.registry_aadt === "number");
     const totalKm = rows.reduce((sum, row) => sum + Number(row.geometry_length_km || 0), 0);
     const cost = rows.reduce((sum, row) => sum + Number(row.planning_cost_ugx || 0), 0);
     const observed = rows.filter(row => typeof row.registry_aadt === "number");
@@ -792,17 +807,17 @@
       {label:"District assignments",value:number(new Set(rows.map(r=>shown(r.admin_district))).size),note:"Complete hierarchy population"},
       {label:"Length QA aligned",value:number(rows.filter(r=>shown(r.length_quality).startsWith("Aligned")).length),note:"Within 15% variance"}
     ]; else if (state.section === "traffic") baseMetrics = [
-      {label:"Traffic observations",value:number(measured),note:number(measured/rows.length*100,1)+"% exact-match coverage"},
-      {label:"Traffic not supplied",value:number(rows.length-measured),note:"Retained in exhaustive table"},
-      {label:"Mean supplied AADT",value:number(observed.reduce((s,r)=>s+Number(r.registry_aadt),0)/Math.max(observed.length,1),0),note:"Measured links only"},
-      {label:"Mean supplied speed",value:number(observed.reduce((s,r)=>s+Number(r.registry_speed_kmh||0),0)/Math.max(observed.length,1),1)+" km/h",note:"Measured links only"}
+      {label:"Observed AADT",value:number(measured),note:"Status recorded as observed"},
+      {label:"Modelled AADT",value:number(modelled),note:"Method not recorded in network extract"},
+      {label:"AADT not supplied",value:number(rows.length-available.length),note:"Retained in exhaustive table"},
+      {label:"Mean available AADT",value:number(available.reduce((s,r)=>s+Number(r.registry_aadt),0)/Math.max(available.length,1),0),note:"Observed and modelled values combined"}
     ]; else if (state.section === "condition") baseMetrics = ["Good","Fair","Poor","Unclassified"].map(name=>({label:name+" links",value:number(rows.filter(r=>shown(r.condition)===name).length),note:number(sumWhere("condition",name,"geometry_length_km"),1)+" geometry km"}));
     else if (state.section === "pims") baseMetrics = ["Critical","High","Moderate","Low"].map(name=>({label:name+" priority",value:number(rows.filter(r=>shown(r.priority_band)===name).length),note:"Complete screened population"}));
     else if (state.section === "hdm4") baseMetrics = [
-      {label:"Model links",value:number(rows.length),note:"No link selected out"},{label:"Traffic inputs",value:number(measured),note:"Exact source matches"},
+      {label:"Model links",value:number(rows.length),note:"No link selected out"},{label:"Traffic inputs",value:number(available.length),note:"Observed and modelled values"},
       {label:"Geometry length",value:number(totalKm,1)+" km",note:"EPSG:32636 measured"},{label:"Aligned lengths",value:number(rows.filter(r=>shown(r.length_quality).startsWith("Aligned")).length),note:"Input calibration QA"}
     ]; else if (state.section === "framework") baseMetrics = [
-      {label:"Registered links",value:number(rows.length),note:"Deterministic link IDs"},{label:"Exact traffic provenance",value:number(measured),note:"No traffic estimation"},
+      {label:"Registered links",value:number(rows.length),note:"Deterministic link IDs"},{label:"Observed traffic",value:number(measured),note:number(modelled)+" modelled values separately labelled"},
       {label:"Parish assignments",value:number(rows.filter(r=>shown(r.parish)!=="Not supplied").length),note:"Supplied hierarchy"},{label:"Aligned geometry QA",value:number(rows.filter(r=>shown(r.length_quality).startsWith("Aligned")).length),note:"Within 15%"}
     ]; else if (state.section === "budgets") baseMetrics = [
       {label:"Total planning allowance",value:"UGX "+number(cost/1e12,2)+"T",note:"Not a BOQ"},{label:"Critical-band allowance",value:"UGX "+number(sumWhere("priority_band","Critical","planning_cost_ugx")/1e9,1)+"B",note:"All critical links"},
@@ -813,7 +828,7 @@
     ]; else baseMetrics = [
       { label: "Mapped links", value: number(rows.length), note: "Every available geometry" },
       { label: "Geometry length", value: number(totalKm, 1) + " km", note: "EPSG:32636 measured" },
-      { label: "Traffic observations", value: number(measured), note: number(measured / rows.length * 100, 1) + "% exact-match coverage" },
+      { label: "Observed AADT", value: number(measured), note: number(modelled) + " modelled AADT values" },
       { label: "Planning allowance", value: "UGX " + number(cost / 1e12, 2) + "T", note: "Modelled - not a BOQ" }
     ];
     const charts = [];
@@ -821,7 +836,7 @@
       charts.push(barChart("Condition distribution", "All links grouped by supplied condition.", aggregate(rows, "condition"), "link count", COLORS[1]));
       charts.push(barChart("Paved and unpaved network", "Bituminous/Concrete are Paved; Gravel/Earth are Unpaved.", aggregate(rows, "pavement_class", "geometry_length_km"), "geometry km", COLORS[2]));
       charts.push(barChart("Planning priority bands", "All links grouped by the derived planning score band.", aggregate(rows, "priority_band"), "link count", COLORS[4]));
-      charts.push(barChart("Traffic source availability", "Exact source-code match versus explicitly unavailable traffic.", aggregate(rows, row => typeof row.registry_aadt === "number" ? "Exact-match supplied" : "Not supplied"), "link count", COLORS[5]));
+      charts.push(barChart("AADT value status", "Observed, modelled and unavailable values are shown separately.", aggregate(rows, trafficValueStatus), "link count", COLORS[5]));
     } else if (state.section === "ducar") {
       charts.push(barChart("DUCAR intervention population", "Every link assigned to a planning intervention.", aggregate(rows, "recommended_intervention"), "link count", COLORS[2]));
       charts.push(barChart("DUCAR record readiness", "Complete data-availability status for mapped links.", aggregate(rows, "record_status"), "link count", COLORS[0]));
@@ -833,10 +848,10 @@
       charts.push(barChart("Length QA categories", "Source-versus-geometry validation applied to every link.", aggregate(rows, "length_quality"), "link count", COLORS[5]));
       charts.push(barChart("Administrative assignment", "District hierarchy availability for every mapped link.", aggregate(rows, row => shown(row.admin_district) === "Not supplied" ? "Not supplied" : "District supplied"), "link count", COLORS[0]));
     } else if (state.section === "traffic") {
-      charts.push(barChart("AADT bands", "Exact-match annual average daily traffic; unavailable values retained separately.", bands(rows,"registry_aadt",[["0–149",0,150],["150–499",150,500],["500–999",500,1000],["1,000+",1000,Infinity]]).concat([{name:"Not supplied",value:rows.length-measured}]), "link count", COLORS[0]));
+      charts.push(barChart("AADT bands", "Observed and modelled annual average daily traffic combined; unavailable values retained separately.", bands(rows,"registry_aadt",[["0–149",0,150],["150–499",150,500],["500–999",500,1000],["1,000+",1000,Infinity]]).concat([{name:"Not supplied",value:rows.length-available.length}]), "link count", COLORS[0]));
       charts.push(barChart("PCU bands", "Passenger-car-unit bands for supplied link observations.", bands(rows,"registry_pcu",[["0–499",0,500],["500–999",500,1000],["1,000–1,499",1000,1500],["1,500+",1500,Infinity]]).concat([{name:"Not supplied",value:rows.filter(r=>typeof r.registry_pcu!=="number").length}]), "link count", COLORS[4]));
       charts.push(barChart("Operating speed bands", "Registry speed in kilometres per hour.", bands(rows,"registry_speed_kmh",[["<15 km/h",0,15],["15–19.9",15,20],["20–24.9",20,25],["25+ km/h",25,Infinity]]).concat([{name:"Not supplied",value:rows.filter(r=>typeof r.registry_speed_kmh!=="number").length}]), "link count", COLORS[1]));
-      charts.push(barChart("Traffic coverage by pavement", "Links with supplied AADT grouped by paved/unpaved class.", aggregate(rows.filter(r=>typeof r.registry_aadt==="number"), "pavement_class"), "measured links", COLORS[2]));
+      charts.push(barChart("Traffic coverage by pavement", "Available observed and modelled AADT grouped by paved/unpaved class.", aggregate(available, "pavement_class"), "links with AADT", COLORS[2]));
     } else if (state.section === "condition") {
       charts.push(barChart("Condition by network length", "Complete geometry length associated with each condition.", aggregate(rows, "condition", "geometry_length_km"), "geometry km", COLORS[1]));
       charts.push(barChart("Condition risk", "Link count grouped by supplied/derived condition-risk value.", aggregate(rows, row => "Risk " + shown(row.condition_risk)), "link count", COLORS[3]));
@@ -848,14 +863,14 @@
       charts.push(barChart("Planning allowance by priority", "Derived link allowances aggregated by priority band.", aggregate(rows, "priority_band", "planning_cost_ugx"), "UGX", COLORS[1]));
       charts.push(barChart("Screening by condition", "Complete inventory entering PIMS screening by condition.", aggregate(rows, "condition"), "link count", COLORS[0]));
     } else if (state.section === "hdm4") {
-      charts.push(barChart("HDM-4 input coverage", "Availability of exact traffic inputs across all links.", aggregate(rows, row => typeof row.registry_aadt === "number" ? "Traffic supplied" : "Traffic not supplied"), "link count", COLORS[0]));
+      charts.push(barChart("HDM-4 input coverage", "Observed, modelled and unavailable AADT inputs across all links.", aggregate(rows, trafficValueStatus), "link count", COLORS[0]));
       charts.push(barChart("Speed input bands", "Supplied registry speeds prepared for model calibration.", bands(rows,"registry_speed_kmh",[["<15",0,15],["15–19.9",15,20],["20–24.9",20,25],["25+",25,Infinity]]).concat([{name:"Not supplied",value:rows.filter(r=>typeof r.registry_speed_kmh!=="number").length}]), "link count", COLORS[1]));
       charts.push(barChart("Pavement input length", "Geometry length by paved/unpaved model class.", aggregate(rows, "pavement_class", "geometry_length_km"), "geometry km", COLORS[2]));
       charts.push(barChart("Length calibration QA", "Source-length variance categories used for input QA.", aggregate(rows, "length_quality"), "link count", COLORS[5]));
     } else if (state.section === "framework") {
       charts.push(barChart("Record status", "Explicit data-availability state for every mapped link.", aggregate(rows, "record_status"), "link count", COLORS[0]));
       charts.push(barChart("Length quality controls", "All link geometries classified by source-length variance.", aggregate(rows, "length_quality"), "link count", COLORS[5]));
-      charts.push(barChart("Traffic provenance", "No estimation: exact-match source or Not supplied.", aggregate(rows, "traffic_source"), "link count", COLORS[4]));
+      charts.push(barChart("Traffic value status", "Observed, modelled and unavailable AADT are distinguished.", aggregate(rows, trafficValueStatus), "link count", COLORS[4]));
       charts.push(barChart("Administrative hierarchy", "Availability of parish-level link attribution.", aggregate(rows, row => shown(row.parish) === "Not supplied" ? "Not supplied" : "Parish supplied"), "link count", COLORS[1]));
     } else if (state.section === "budgets") {
       charts.push(barChart("Allowance by priority band", "Derived planning allowance aggregated across every link.", aggregate(rows, "priority_band", "planning_cost_ugx"), "UGX", COLORS[1]));
@@ -979,13 +994,13 @@
     ];
     if(!metrics.some(item=>item.label==="Total road inventory"))metrics=[{label:"Total road inventory",value:number(authoritativeKm)+" km",note:"Authoritative national total"},...metrics];
     const common = {
-      overview: [["Condition affected length","All mapped road length by condition.","condition",COLORS[1]],["Pavement affected length","Paved and unpaved cumulative length.","pavement_class",COLORS[2]],["Priority affected length","Planning bands by cumulative road length.","priority_band",COLORS[4]],["Traffic data coverage","Road length with or without exact traffic data.",r=>typeof r.registry_aadt==="number"?"Traffic supplied":"Not supplied",COLORS[5]]],
+      overview: [["Condition affected length","All mapped road length by condition.","condition",COLORS[1]],["Pavement affected length","Paved and unpaved cumulative length.","pavement_class",COLORS[2]],["Priority affected length","Planning bands by cumulative road length.","priority_band",COLORS[4]],["AADT value status","Road length with observed, modelled or unavailable AADT.",trafficValueStatus,COLORS[5]]],
       ducar: [["Intervention coverage length","Cumulative length assigned to each treatment.","recommended_intervention",COLORS[2]],["Condition coverage length","Network condition by affected road length.","condition",COLORS[1]],["Pavement coverage length","Paved and unpaved road length.","pavement_class",COLORS[0]],["Priority coverage length","Screened length by priority band.","priority_band",COLORS[4]]],
       network: [["Pavement Material composition","Complete geometry length by pavement material.","surface",COLORS[2]],["Surface Type classification","Explicit Paved and Unpaved length.","pavement_class",COLORS[1]],["Condition coverage","Affected length by road condition.","condition",COLORS[3]],["Administrative coverage","Road length by district.","district",COLORS[0]]],
       condition: [["Condition by network length","Complete affected road length.","condition",COLORS[1]],["Condition risk","Affected length by condition-risk score.",r=>"Risk "+shown(r.condition_risk),COLORS[3]],["Recommended interventions","Cumulative length by treatment.","recommended_intervention",COLORS[2]],["Pavement Material condition coverage","Complete length by pavement material.","surface",COLORS[5]]],
       pims: [["Priority screening bands","Affected road length by priority.","priority_band",COLORS[4]],["Intervention pipeline","Cumulative treatment length.","recommended_intervention",COLORS[2]],["Screening by condition","Input length by condition.","condition",COLORS[0]],["Screening by pavement","Input length by pavement.","pavement_class",COLORS[1]]],
-      hdm4: [["HDM-4 traffic coverage","Road length with exact traffic inputs.",r=>typeof r.registry_aadt==="number"?"Traffic supplied":"Not supplied",COLORS[0]],["Pavement input length","Model length by pavement.","pavement_class",COLORS[2]],["Condition input length","Model length by condition.","condition",COLORS[3]],["Priority input length","Model length by planning band.","priority_band",COLORS[4]]],
-      framework: [["Condition data coverage","Governed length by condition.","condition",COLORS[1]],["Traffic data provenance","Length with exact traffic values.",r=>typeof r.registry_aadt==="number"?"Traffic supplied":"Not supplied",COLORS[4]],["Administrative hierarchy","Length with parish attribution.",r=>shown(r.parish)==="Not supplied"?"Not supplied":"Parish supplied",COLORS[0]],["Pavement governance","Length by explicit pavement class.","pavement_class",COLORS[2]]]
+      hdm4: [["HDM-4 traffic coverage","Road length by observed, modelled or unavailable AADT.",trafficValueStatus,COLORS[0]],["Pavement input length","Model length by pavement.","pavement_class",COLORS[2]],["Condition input length","Model length by condition.","condition",COLORS[3]],["Priority input length","Model length by planning band.","priority_band",COLORS[4]]],
+      framework: [["Condition data coverage","Governed length by condition.","condition",COLORS[1]],["Traffic value status","Road length by observed, modelled or unavailable AADT.",trafficValueStatus,COLORS[4]],["Administrative hierarchy","Length with parish attribution.",r=>shown(r.parish)==="Not supplied"?"Not supplied":"Parish supplied",COLORS[0]],["Pavement governance","Length by explicit pavement class.","pavement_class",COLORS[2]]]
     };
     let charts;
     if (state.section === "traffic") {const completeBand=key=>(cache.hotosmAnalysis?.traffic_2026?.[key]||[]).map(item=>({name:item.category,value:Number(item.length_km||0),length:Number(item.length_km||0),count:Number(item.feature_count||0)}));charts = [
@@ -1112,7 +1127,7 @@
     const validIdKm=links.filter(row=>/^[A-Z]{4}\d{3}$/.test(row.link_id)).reduce((s,row)=>s+Number(row.geometry_length_km||0),0);
     const charts = barChart("Administrative relation basis", "True polygon intersections are separated from registry hierarchy fallbacks.", [{name:"Spatial polygon intersection",value:spatial},{name:"Registry hierarchy fallback",value:fallback}], "affected km", COLORS[5]) +
       barChart("Administrative length by pavement", "Every relation inherits the explicit paved/unpaved classification.", aggregate(relations, "pavement_class"), "affected km", COLORS[2]) +
-      barChart("Administrative traffic coverage", "Exact-match traffic availability by affected km.", aggregate(relations, row => row.traffic_measured ? "Traffic supplied" : "Traffic not supplied"), "affected km", COLORS[0]);
+      barChart("Administrative AADT availability", "Available AADT includes observed and modelled values.", aggregate(relations, row => row.traffic_measured ? "AADT available" : "AADT not supplied"), "affected km", COLORS[0]);
     const nodes = mindmap.nodes || [];
     const edges=mindmap.edges||[];
     const mind = `<article class="matrix-card admin-block"><h3>Interactive DUCAR system mind map</h3><p>Hover or focus a node to inspect its type, stored records and relationship count.</p><div class="mind-map-canvas"><button class="mind-root" type="button">DUCAR Priority Studio<small>${number(networkKm,1)} network km</small></button><div class="mind-branches"><section><h4>Reporting sections</h4>${nodes.filter(n=>n.type==="section").map(n=>`<button class="mind-node" type="button" title="${esc(n.label)} · ${edges.filter(e=>e.from===n.id||e.to===n.id).length} relationships"><strong>${esc(n.label)}</strong><small>${edges.filter(e=>e.from===n.id||e.to===n.id).length} relationships</small></button>`).join("")}</section><section><h4>Data and evidence stores</h4>${nodes.filter(n=>n.type==="data").map(n=>`<button class="mind-node data" type="button" title="${esc(n.label)}"><strong>${esc(n.label)}</strong><small>${n.records?number(n.records)+" rows":"Connected store"}</small></button>`).join("")}</section></div></div></article>`;
@@ -1135,7 +1150,7 @@
       {name:"System parameter completeness",values:parameterRows.map(row=>({name:label(row.field),value:row.suppliedKm})),unit:"affected km"},
       {name:"Database store population",values:database.tables.map(table=>({name:table.table,value:Number(table.row_count||0)})),unit:"records"}
     ];
-    return metricCards([{label:"Network geometry health",value:number(networkKm,1)+" km",note:"Complete DUCAR reporting denominator"},{label:"Valid Link-ID length",value:number(validIdKm,1)+" km",note:number(validIdKm/Math.max(networkKm,1)*100,1)+"% standard compliance"},{label:"Spatial admin length",value:number(spatial,1)+" km",note:"Polygon-intersected coverage"},{label:"Traffic parameter length",value:number(trafficKm,1)+" km",note:"Exact-match observation coverage"}]) + `<div class="chart-grid">${charts}</div>`+interactiveGallery("System health · animated chart gallery",healthSeries)+insightWall("System health & administration · 50+ insight atlas",adminInsights);
+    return metricCards([{label:"Network geometry health",value:number(networkKm,1)+" km",note:"Complete DUCAR reporting denominator"},{label:"Valid Link-ID length",value:number(validIdKm,1)+" km",note:number(validIdKm/Math.max(networkKm,1)*100,1)+"% standard compliance"},{label:"Spatial admin length",value:number(spatial,1)+" km",note:"Polygon-intersected coverage"},{label:"AADT available length",value:number(trafficKm,1)+" km",note:"Observed and modelled values combined"}]) + `<div class="chart-grid">${charts}</div>`+interactiveGallery("System health · animated chart gallery",healthSeries)+insightWall("System health & administration · 50+ insight atlas",adminInsights);
   }
   function sectionClusteredBreakdowns() {
     const links=activeLinkRows(),structures=(cache.structures?.rows||[]).map(row=>({...row,geometry_length_km:Number(row.allocated_road_length_km||0)})),socio=applyHeaderFilters(cache.socio?.rows||[]),relations=applyHeaderFilters(cache.relations||[]).map(row=>({...row,geometry_length_km:Number(row.covered_length_km||0)}));
@@ -1721,7 +1736,7 @@
   function sectionFormulas(section) {
     const common=[coverageFormula("Coordinate length coverage","x_coordinate_dd","Affected length with WGS84 X/Y location."),coverageFormula("District assignment coverage","district","Affected length assigned to an administrative district.")];
     const owned={
-      traffic:[coverageFormula("AADT length coverage","registry_aadt","Length with exact-match AADT."),coverageFormula("PCU length coverage","registry_pcu","Length with passenger-car-unit loading."),coverageFormula("Speed length coverage","registry_speed_kmh","Length with operating speed."),weightedFormula("Length-weighted AADT","registry_aadt","vehicles/day","Traffic intensity weighted by length."),weightedFormula("Length-weighted speed","registry_speed_kmh","km/h","Speed weighted by affected length.")],
+      traffic:[coverageFormula("AADT length coverage","registry_aadt","Length with available observed or modelled AADT."),coverageFormula("PCU length coverage","registry_pcu","Length with passenger-car-unit loading."),coverageFormula("Speed length coverage","registry_speed_kmh","Length with operating speed."),weightedFormula("Length-weighted AADT","registry_aadt","vehicles/day","Available observed and modelled AADT weighted by length."),weightedFormula("Length-weighted speed","registry_speed_kmh","km/h","Speed weighted by affected length.")],
       condition:[coverageFormula("Condition classification coverage","condition","Length with condition class."),shareFormula("Poor-condition share","condition",["Poor","POOR"],"Affected length in poor condition.",true),shareFormula("Good-condition share","condition",["Good","GOOD"],"Affected length in good condition."),coverageFormula("Intervention coverage","recommended_intervention","Length with an assigned intervention."),weightedFormula("Length-weighted condition risk","condition_risk","risk points","Condition risk weighted by length.")],
       network:[shareFormula("Paved length share","pavement_class",["Paved","PAVED"],"Bituminous and concrete length."),shareFormula("Unpaved length share","pavement_class",["Unpaved","UNPAVED"],"Gravel and earth length.",true),coverageFormula("Surface coverage","surface","Length with surface classification."),coverageFormula("Parish hierarchy coverage","parish","Length assigned through parish level.")],
       pims:[shareFormula("Critical/high priority share","priority_band",["Critical","High"],"Length in urgent planning bands.",true),coverageFormula("Priority score coverage","planning_priority_score","Length with priority score."),coverageFormula("Intervention coverage","recommended_intervention","Length with planned action."),weightedFormula("Length-weighted priority score","planning_priority_score","points","Planning score weighted by length.")],
