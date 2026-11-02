@@ -18,8 +18,8 @@
     socio: "./data/ducar_socioeconomic_link_analysis.json.gz?v=20260930-fast-load-1",
     facilities: "./data/uganda_socioeconomic_facilities.geojson.gz?v=20260930-fast-load-1",
     mapRoads: "./data/ducar_map_preview.geojson.gz?v=20260831-road-names-1",
-    structures: "./data/ducar_structure_analysis.json.gz?v=20260930-fast-load-1",
-    structureMap: "./data/ducar_structures.geojson.gz?v=20260930-fast-load-1",
+    structures: "./data/ducar_structure_analysis.json.gz?v=20261102-public-structures",
+    structureMap: "./data/ducar_structures.geojson.gz?v=20261102-public-structures",
     hotosmMap: "./data/hotosm_vehicular_map.geojson.gz?v=20260831-mowt-seven-classes-1",
     hotosmDetailManifest: "./data/hotosm_detail_tiles_manifest.json?v=20260831-mowt-seven-classes-1",
     hotosmAnalysis: "./data/hotosm_vehicular_analysis.json?v=20260831-mowt-seven-classes-1",
@@ -236,7 +236,7 @@
     network: ["link_id", "road_name", "surface", "pavement_class", "source_length_km", "geometry_length_km", "district", "county", "subcounty", "parish", "registry_aadt", "condition", "recommended_intervention"],
     traffic: ["link_id", "road_name", "registry_aadt", "traffic_value_status", "traffic_method_public", "registry_pcu", "registry_speed_kmh", "geometry_length_km", "surface", "pavement_class", "condition", "district", "county", "subcounty", "parish", "planning_priority_score", "recommended_intervention"],
     condition: ["link_id", "road_name", "condition", "surface", "pavement_class", "condition_risk", "surface_risk", "recommended_intervention", "planning_priority_score", "priority_band", "geometry_length_km", "district", "county", "subcounty", "parish", "planning_cost_ugx"],
-    structures: ["structure_id", "link_id", "linked_road_name", "x_coordinate_dd", "y_coordinate_dd", "district", "structure_name", "structure_location", "chainage_km", "structure_class", "structure_type", "structure_age", "current_condition", "risk_band", "last_major_works", "last_major_work_year", "remarks", "recommended_intervention", "programme_cost_ugx", "linked_road_length_km", "allocated_road_length_km", "link_match_score", "linkage_quality", "map_location_method", "source_occurrence_index", "source_occurrence_count", "source_file", "source_sheet", "source_row"],
+    structures: ["structure_id", "link_id", "linked_road_name", "x_coordinate_dd", "y_coordinate_dd", "district", "structure_name", "structure_location", "chainage_km", "structure_class", "structure_type", "structure_age", "current_condition", "risk_band", "last_major_works", "last_major_work_year", "remarks", "recommended_intervention", "programme_cost_ugx", "linked_road_length_km", "allocated_road_length_km", "link_match_score", "linkage_quality", "map_location_method", "source_occurrence_index", "source_occurrence_count"],
     pims: ["link_id", "road_name", "priority_band", "planning_priority_score", "priority_basis", "recommended_intervention", "planning_cost_per_km_ugx", "planning_works_cost_ugx", "planning_preparation_supervision_ugx", "planning_risk_contingency_ugx", "planning_cost_ugx", "planning_cost_price_base_year", "condition", "surface", "pavement_class", "geometry_length_km", "district", "county", "subcounty", "parish"],
     hdm4: ["link_id", "road_name", "geometry_length_km", "source_length_km", "registry_speed_kmh", "registry_aadt", "traffic_value_status", "registry_pcu", "surface", "pavement_class", "condition", "planning_priority_score", "recommended_intervention", "planning_cost_per_km_ugx", "planning_cost_ugx", "planning_cost_price_base_year"],
     framework: ["link_id", "road_name", "district", "county", "subcounty", "parish", "surface", "pavement_class", "condition", "geometry_length_km", "registry_aadt", "traffic_value_status", "planning_priority_score", "priority_band", "recommended_intervention", "priority_basis"],
@@ -426,7 +426,7 @@
   }
   async function fetchGzipJson(path) {
     const url=new URL(path,location.href);
-    url.searchParams.set("v","20261030-public-status");
+    url.searchParams.set("v","20261102-public-structures");
     const response=await fetch(url);
     if(!response.ok)throw new Error("Unable to load "+path);
     if(typeof DecompressionStream==="undefined")throw new Error("This browser does not support progressive compressed records");
@@ -1078,9 +1078,8 @@
       {name:"Linkage quality",values:aggregate(weighted,"linkage_quality"),unit:"affected km"},
       {name:"Map-location method",values:aggregate(weighted,"map_location_method"),unit:"affected km"},
       {name:"Link-match score band",values:bands(weighted,"link_match_score",[["Below 0.50",0,.5],["0.50–0.74",.5,.75],["0.75–0.89",.75,.9],["0.90–1.00",.9,1.01]]),unit:"affected km"},
-      {name:"Chainage band",values:bands(weighted,"chainage_km",[["Below 1 km",0,1],["1–4.9 km",1,5],["5–9.9 km",5,10],["10+ km",10,Infinity]]),unit:"affected km"},
-      {name:"Source workbook",values:aggregate(weighted,"source_file"),unit:"affected km"}
-    ];})())+`<div class="method-note">All ${number(payload.metadata.structure_occurrences)} structure occurrences are retained from ${number(payload.metadata.source_workbooks)} district workbooks plus the programme bridge GeoJSON. Multi-chainage rows are expanded. Linked road length is divided across structures on the same Link ID, so dashboard totals are additive and do not count one road repeatedly. Low-confidence and unmatched joins remain explicit in the exhaustive table.</div>`;
+      {name:"Chainage band",values:bands(weighted,"chainage_km",[["Below 1 km",0,1],["1–4.9 km",1,5],["5–9.9 km",5,10],["10+ km",10,Infinity]]),unit:"affected km"}
+    ];})())+`<div class="method-note">All ${number(payload.metadata.structure_occurrences)} structure occurrences are retained in the analysis. Multi-chainage rows are expanded. Linked road length is divided across structures on the same Link ID, so dashboard totals are additive and do not count one road repeatedly. Low-confidence and unmatched joins remain explicit in the exhaustive table.</div>`;
   }
 
   function globalRows() {
@@ -1706,7 +1705,7 @@
     const rows=payload.rows||[], links=payload.link_summary||[];
     const allocated=field=>aggregate(rows.map(row=>({...row,geometry_length_km:Number(row.allocated_road_length_km||0)})),field);
     const fields=["link_id","road_name","district","geometry_length_km","structure_records","bridge_records","major_culvert_records","dominant_structure_condition","highest_structure_risk"];
-    return `<div class="chart-grid">${barChart("Linked-road length by structure class","Allocated road exposure; no Link ID is double-counted in the complete total.",allocated("structure_class"),"affected km",COLORS[5])}${barChart("Linked-road length by structure condition","Every supplied structure condition translated to affected road length.",allocated("current_condition"),"affected km",COLORS[1])}${barChart("Linked-road length by linkage quality","Road length associated with high, moderate, low and spatial joins.",allocated("linkage_quality"),"affected km",COLORS[0])}${barChart("Linked-road length by source register","Every district workbook and programme source retained.",allocated("source_file"),"affected km",COLORS[2])}</div><div class="method-note">The structure-to-road relation is auditable through source file, source row, chainage, Link ID, match score, linkage quality and map-location method. ${number(payload.metadata.structure_occurrences-payload.metadata.linked_structure_occurrences)} unmatched occurrences remain in the exhaustive table and are never assigned fabricated road length.</div><div class="records-status"><strong>${number(links.length)}</strong> DUCAR Link IDs with linked structures · complete per-link structure matrix</div><div class="table-wrap analytics-table"><table class="data-table"><thead><tr>${fields.map(field=>`<th>${esc(label(field))}</th>`).join("")}</tr></thead><tbody>${links.map(row=>`<tr>${fields.map(field=>`<td class="${cellClass(field,row[field])}">${esc(field==="geometry_length_km"?number(row[field],4)+" km":shown(row[field]))}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+    return `<div class="chart-grid">${barChart("Linked-road length by structure class","Allocated road exposure; no Link ID is double-counted in the complete total.",allocated("structure_class"),"affected km",COLORS[5])}${barChart("Linked-road length by structure condition","Every supplied structure condition translated to affected road length.",allocated("current_condition"),"affected km",COLORS[1])}${barChart("Linked-road length by linkage quality","Road length associated with high, moderate, low and spatial joins.",allocated("linkage_quality"),"affected km",COLORS[0])}</div><div class="method-note">The structure-to-road relation is auditable through chainage, Link ID, match score, linkage quality and map-location method. ${number(payload.metadata.structure_occurrences-payload.metadata.linked_structure_occurrences)} unmatched occurrences remain in the exhaustive table and are never assigned fabricated road length.</div><div class="records-status"><strong>${number(links.length)}</strong> DUCAR Link IDs with linked structures · complete per-link structure matrix</div><div class="table-wrap analytics-table"><table class="data-table"><thead><tr>${fields.map(field=>`<th>${esc(label(field))}</th>`).join("")}</tr></thead><tbody>${links.map(row=>`<tr>${fields.map(field=>`<td class="${cellClass(field,row[field])}">${esc(field==="geometry_length_km"?number(row[field],4)+" km":shown(row[field]))}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
   }
 
   function legacyAnalyticsHtml() {
