@@ -1498,7 +1498,7 @@
   }
   function exportRecords(dataset) {
     const rows = filtered(dataset);
-    exportRowsCsv(dataset,rows,`ducar_${state.section}_filtered_records.csv`);
+    exportRowsCsv(dataset,rows,`ducar-${state.section}-filtered-records.csv`);
   }
   function exportRowsCsv(dataset,rows,filename) {
     const csv=[dataset.fields.map(csvValue).join(",")].concat(rows.map(row=>dataset.fields.map(field=>csvValue(row[field])).join(","))).join("\r\n");
@@ -1506,32 +1506,32 @@
   }
   function exportRowsJson(dataset) {
     const payload={section:state.section,generated_at:new Date().toISOString(),record_count:dataset.rows.length,field_count:dataset.fields.length,fields:dataset.fields,records:dataset.rows.map(row=>Object.fromEntries(dataset.fields.map(field=>[field,row[field]])))};
-    downloadBlob(new Blob([JSON.stringify(payload,null,2)],{type:"application/json;charset=utf-8"}),`ducar_${state.section}_complete_records.json`);
+    downloadBlob(new Blob([JSON.stringify(payload,null,2)],{type:"application/json;charset=utf-8"}),`ducar-${state.section}-complete-records.json`);
   }
   function exportRowsGeoJson(dataset) {
     const coordinate=(row,names)=>{for(const name of names){const value=Number(row[name]);if(Number.isFinite(value))return value;}return null;};
     const features=dataset.rows.map(row=>{const x=coordinate(row,["x_coordinate_dd","x_coordinate","longitude","lon","lng","x"]),y=coordinate(row,["y_coordinate_dd","y_coordinate","latitude","lat","y"]);return {type:"Feature",geometry:x!==null&&y!==null?{type:"Point",coordinates:[x,y]}:null,properties:Object.fromEntries(dataset.fields.map(field=>[field,row[field]]))};});
     const payload={type:"FeatureCollection",name:`ducar_${state.section}_complete_records`,crs:{type:"name",properties:{name:"urn:ogc:def:crs:OGC:1.3:CRS84"}},features};
-    downloadBlob(new Blob([JSON.stringify(payload)],{type:"application/geo+json;charset=utf-8"}),`ducar_${state.section}_complete_records.geojson`);
+    downloadBlob(new Blob([JSON.stringify(payload)],{type:"application/geo+json;charset=utf-8"}),`ducar-${state.section}-complete-records.geojson`);
   }
   function exportRowsKml(dataset) {
     const xml=value=>String(value??"").replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&apos;"}[char]));
     const coordinate=(row,names)=>{for(const name of names){const value=Number(row[name]);if(Number.isFinite(value))return value;}return null;};
     const placemarks=dataset.rows.map(row=>{const x=coordinate(row,["x_coordinate_dd","x_coordinate","longitude","lon","lng","x"]),y=coordinate(row,["y_coordinate_dd","y_coordinate","latitude","lat","y"]);if(x===null||y===null)return "";const name=row.link_id||row.structure_id||row.road_name||"DUCAR record",extended=dataset.fields.map(field=>`<Data name="${xml(field)}"><value>${xml(shown(row[field]))}</value></Data>`).join("");return `<Placemark><name>${xml(name)}</name><ExtendedData>${extended}</ExtendedData><Point><coordinates>${x},${y},0</coordinates></Point></Placemark>`;}).join("");
     const kml=`<?xml version="1.0" encoding="UTF-8"?><kml xmlns="http://www.opengis.net/kml/2.2"><Document><name>DUCAR ${xml(state.section)} complete records</name>${placemarks}</Document></kml>`;
-    downloadBlob(new Blob([kml],{type:"application/vnd.google-earth.kml+xml;charset=utf-8"}),`ducar_${state.section}_complete_records.kml`);
+    downloadBlob(new Blob([kml],{type:"application/vnd.google-earth.kml+xml;charset=utf-8"}),`ducar-${state.section}-complete-records.kml`);
   }
   function exportDataDictionary(dataset) {
     const rows=dataset.fields.map(field=>{const values=dataset.rows.map(row=>row[field]).filter(value=>value!==null&&value!==undefined&&String(value).trim()!==""),numeric=values.length>0&&values.every(value=>Number.isFinite(Number(value))),distinct=new Set(values.map(value=>String(value))).size;return {field_name:field,display_label:label(field),inferred_type:numeric?"NUMERIC":"TEXT",populated_records:values.length,missing_records:dataset.rows.length-values.length,distinct_values:distinct};});
     const fields=["field_name","display_label","inferred_type","populated_records","missing_records","distinct_values"];
-    exportRowsCsv({fields},rows,`ducar_${state.section}_data_dictionary.csv`);
+    exportRowsCsv({fields},rows,`ducar-${state.section}-data-dictionary.csv`);
   }
   function exportSqlDump(dataset) {
     const safeName=`ducar_${state.section}_records`.replace(/[^a-z0-9_]/gi,"_"),quote=value=>value===null||value===undefined?"NULL":`'${String(value).replaceAll("'","''")}'`;
     const types=Object.fromEntries(dataset.fields.map(field=>{const values=dataset.rows.map(row=>row[field]).filter(value=>value!==null&&value!==undefined&&String(value).trim()!=="");return [field,values.length&&values.every(value=>Number.isFinite(Number(value)))?"REAL":"TEXT"];}));
     const ddl=`CREATE TABLE IF NOT EXISTS "${safeName}" (\n${dataset.fields.map(field=>`  "${field.replaceAll('"','""')}" ${types[field]}`).join(",\n")}\n);`;
     const inserts=dataset.rows.map(row=>`INSERT INTO "${safeName}" (${dataset.fields.map(field=>`"${field.replaceAll('"','""')}"`).join(", ")}) VALUES (${dataset.fields.map(field=>quote(row[field])).join(", ")});`);
-    downloadBlob(new Blob([[ddl,...inserts].join("\n")],{type:"application/sql;charset=utf-8"}),`ducar_${state.section}_complete_records.sql`);
+    downloadBlob(new Blob([[ddl,...inserts].join("\n")],{type:"application/sql;charset=utf-8"}),`ducar-${state.section}-complete-records.sql`);
   }
   function recordsHtml() {
     const dataset = recordDataset();
@@ -1572,7 +1572,7 @@
     line("Reporting controls: no Top-N selection; filters change the view only; CSV exports retain the complete filtered population.",8);
     // Dedicated PNG buttons retain every chart image. Avoiding hundreds of
     // html2canvas operations keeps the complete PDF export responsive.
-    const filename=`ducar_${state.section}_complete_report.pdf`;document.body.dataset.lastDownload=filename;pdf.save(filename);if(trigger){trigger.disabled=false;trigger.textContent="PDF report";}
+    const filename=`ducar-${state.section}-complete-report.pdf`;document.body.dataset.lastDownload=filename;pdf.save(filename);if(trigger){trigger.disabled=false;trigger.textContent="PDF report";}
   }
 
   function globalMapHtml() {
@@ -1997,7 +1997,7 @@
     root.querySelectorAll(".table-wrap").forEach((wrap,index)=>{if(wrap.classList.contains("all-records-table")||wrap.closest(".table-export-wrap"))return;const button=document.createElement("button");button.type="button";button.className="csv-download floating";button.dataset.tableCsv="";button.textContent="CSV · complete table";button.dataset.tableIndex=String(index);wrap.before(button);});
     root.querySelectorAll("[data-download-png]").forEach((button,index)=>button.addEventListener("click",event=>{event.stopPropagation();downloadElementPng(button.closest("[data-download-chart]"),`ducar_${state.section}_chart_${index+1}.png`);}));
     root.querySelectorAll("[data-section-pdf]").forEach(button=>button.addEventListener("click",sectionPdf));
-    root.querySelectorAll("[data-table-csv]").forEach(button=>button.addEventListener("click",()=>{const table=button.closest(".table-export-wrap")?.querySelector("table")||button.nextElementSibling?.querySelector?.("table");if(table)tableCsv(table,`ducar_${state.section}_complete_table.csv`);}));
+    root.querySelectorAll("[data-table-csv]").forEach(button=>button.addEventListener("click",()=>{const table=button.closest(".table-export-wrap")?.querySelector("table")||button.nextElementSibling?.querySelector?.("table");if(table)tableCsv(table,`ducar-${state.section}-complete-table.csv`);}));
     root.querySelectorAll("[data-ibp-year]").forEach(button=>button.addEventListener("click",()=>{const year=button.dataset.ibpYear;root.querySelectorAll("[data-ibp-year]").forEach(item=>item.classList.toggle("active",item===button));root.querySelectorAll("[data-ibp-record-year]").forEach(row=>{row.hidden=year!=="all"&&row.dataset.ibpRecordYear!==year;});}));
     const search=root.querySelector(".records-search"); if(search) search.addEventListener("input",()=>{state.search=search.value;state.page=1;render();});
     root.querySelectorAll("[data-column-sort]").forEach(button=>button.addEventListener("click",()=>{const field=button.dataset.columnSort;if(state.sortField===field)state.sortDirection=state.sortDirection==="asc"?"desc":"asc";else{state.sortField=field;state.sortDirection="asc";}render();}));
@@ -2051,7 +2051,7 @@
     trigger.addEventListener("click",event=>{event.stopPropagation();const opening=panel.hidden;document.querySelectorAll(".ducar-export-panel").forEach(menu=>menu.hidden=true);panel.hidden=!opening;trigger.setAttribute("aria-expanded",String(opening));wrapper.classList.toggle("open",opening);if(opening){panel.querySelector('[data-header-export="table"]').disabled=!root.querySelector("table");panel.querySelector('[data-header-export="map"]').disabled=!root.querySelector(".map-stage");panel.querySelector("header small").textContent=`Complete ${SECTION_META[state.section]?.[0]||"DUCAR"} population`;}});
     wrapper.addEventListener("keydown",event=>{if(event.key==="Escape"){close();trigger.focus();}});
     wrapper.addEventListener("click",event=>{const option=event.target.closest?.('[data-header-export="kml"]');if(!option)return;close();exportRowsKml(recordDataset());});
-    wrapper.addEventListener("click",async event=>{const option=event.target.closest?.("[data-header-export]");if(!option||option.disabled)return;const action=option.dataset.headerExport,sectionDataset=recordDataset(),dataset=sectionDataset;close();try{if(action==="csv-all")exportRowsCsv(dataset,dataset.rows,`ducar_${state.section}_complete_records.csv`);else if(action==="csv-filtered")exportRowsCsv(dataset,filtered(sectionDataset),`ducar_${state.section}_filtered_records.csv`);else if(action==="json")exportRowsJson(dataset);else if(action==="geojson")exportRowsGeoJson(dataset);else if(action==="sql")exportSqlDump(dataset);else if(action==="dictionary")exportDataDictionary(dataset);else if(action==="inventory"){const anchor=document.createElement("a");anchor.href=PATHS.inventory;anchor.download="approved_network_inventory_2026.json";anchor.click();}else if(action==="pdf")await sectionPdf();else if(action==="png")await downloadElementPng(root,`ducar_${state.section}_${state.tab}_complete_view.png`);else if(action==="table")tableCsv(root.querySelector("table"),`ducar_${state.section}_${state.tab}_visible_table.csv`);else if(action==="map")root.querySelector('[data-map-tool="download"]')?.click();}catch(error){console.error("DUCAR export failed",error);}});
+    wrapper.addEventListener("click",async event=>{const option=event.target.closest?.("[data-header-export]");if(!option||option.disabled)return;const action=option.dataset.headerExport,sectionDataset=recordDataset(),dataset=sectionDataset;close();try{if(action==="csv-all")exportRowsCsv(dataset,dataset.rows,`ducar-${state.section}-complete-records.csv`);else if(action==="csv-filtered")exportRowsCsv(dataset,filtered(sectionDataset),`ducar-${state.section}-filtered-records.csv`);else if(action==="json")exportRowsJson(dataset);else if(action==="geojson")exportRowsGeoJson(dataset);else if(action==="sql")exportSqlDump(dataset);else if(action==="dictionary")exportDataDictionary(dataset);else if(action==="inventory"){const anchor=document.createElement("a");anchor.href=PATHS.inventory;anchor.download="approved_network_inventory_2026.json";anchor.click();}else if(action==="pdf")await sectionPdf();else if(action==="png")await downloadElementPng(root,`ducar_${state.section}_${state.tab}_complete_view.png`);else if(action==="table")tableCsv(root.querySelector("table"),`ducar-${state.section}-${state.tab}-visible-table.csv`);else if(action==="map")root.querySelector('[data-map-tool="download"]')?.click();}catch(error){console.error("DUCAR export failed",error);}});
     document.addEventListener("click",event=>{if(!wrapper.contains(event.target))close();});
     return true;
   }
