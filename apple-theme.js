@@ -10,24 +10,24 @@
   "use strict";
 
   var COLOR_MAP = {
-    "#22c55e": "#30d158", // green    -> systemGreen
-    "#16a34a": "#30d158",
-    "#84cc16": "#64d2ff", // lime     -> systemTeal-ish (kept distinct from green)
-    "#a3e635": "#64d2ff",
-    "#eab308": "#ffd60a", // yellow   -> systemYellow
-    "#facc15": "#ffd60a",
-    "#f97316": "#ff9f0a", // orange   -> systemOrange
-    "#fb923c": "#ff9f0a",
-    "#ef4444": "#ff453a", // red      -> systemRed
-    "#dc2626": "#ff453a",
-    "#0ea5e9": "#0a84ff", // sky      -> systemBlue (brand)
-    "#38bdf8": "#0a84ff",
-    "#8b5cf6": "#bf5af2", // violet   -> systemPurple
-    "#a78bfa": "#bf5af2",
-    "#ec4899": "#ff375f", // pink     -> systemPink
-    "#f472b6": "#ff375f",
-    "#06b6d4": "#64d2ff", // cyan     -> systemTeal
-    "#eab90a": "#ffd60a"
+    "#278a50": "#278a50", // green    -> systemGreen
+    "#16a34a": "#278a50",
+    "#5f8f2f": "#0f8fa8", // lime     -> systemTeal-ish (kept distinct from green)
+    "#a3e635": "#0f8fa8",
+    "#b77900": "#b77900", // yellow   -> systemYellow
+    "#facc15": "#b77900",
+    "#c75a24": "#c75a24", // orange   -> systemOrange
+    "#fb923c": "#c75a24",
+    "#c43d4d": "#c43d4d", // red      -> systemRed
+    "#dc2626": "#c43d4d",
+    "#0ea5e9": "#2563eb", // sky      -> systemBlue (brand)
+    "#38bdf8": "#2563eb",
+    "#8b5cf6": "#7258b7", // violet   -> systemPurple
+    "#a78bfa": "#7258b7",
+    "#ec4899": "#b83d6b", // pink     -> systemPink
+    "#f472b6": "#b83d6b",
+    "#06b6d4": "#0f8fa8", // cyan     -> systemTeal
+    "#eab90a": "#b77900"
   };
 
   function remapAttr(el, attrName) {

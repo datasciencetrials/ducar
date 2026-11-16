@@ -40,17 +40,17 @@
         <div style="display: flex; flex-direction: column; gap: 12px; font-size: 0.88rem;">
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <span style="color: #cbd5e1;">Focus Search Box</span>
-            <kbd style="background: #1e293b; border: 1px solid #334155; padding: 3px 8px; border-radius: 6px; color: #00ff66; font-family: monospace;">Ctrl + K</kbd> or <kbd style="background: #1e293b; border: 1px solid #334155; padding: 3px 8px; border-radius: 6px; color: #00ff66; font-family: monospace;">F</kbd>
+            <kbd style="background: #1e293b; border: 1px solid #334155; padding: 3px 8px; border-radius: 6px; color: #278a50; font-family: monospace;">Ctrl + K</kbd> or <kbd style="background: #1e293b; border: 1px solid #334155; padding: 3px 8px; border-radius: 6px; color: #278a50; font-family: monospace;">F</kbd>
           </div>
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <span style="color: #cbd5e1;">Switch Between Tabs</span>
             <div>
-              <kbd style="background: #1e293b; border: 1px solid #334155; padding: 3px 8px; border-radius: 6px; color: #ff00ea; font-family: monospace;">&larr;</kbd> / <kbd style="background: #1e293b; border: 1px solid #334155; padding: 3px 8px; border-radius: 6px; color: #ff00ea; font-family: monospace;">&rarr;</kbd>
+              <kbd style="background: #1e293b; border: 1px solid #334155; padding: 3px 8px; border-radius: 6px; color: #a4478f; font-family: monospace;">&larr;</kbd> / <kbd style="background: #1e293b; border: 1px solid #334155; padding: 3px 8px; border-radius: 6px; color: #a4478f; font-family: monospace;">&rarr;</kbd>
             </div>
           </div>
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <span style="color: #cbd5e1;">Clear Focus / Close Modal</span>
-            <kbd style="background: #1e293b; border: 1px solid #334155; padding: 3px 8px; border-radius: 6px; color: #ff9900; font-family: monospace;">Esc</kbd>
+            <kbd style="background: #1e293b; border: 1px solid #334155; padding: 3px 8px; border-radius: 6px; color: #c47a13; font-family: monospace;">Esc</kbd>
           </div>
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <span style="color: #cbd5e1;">Toggle Shortcuts Help</span>
