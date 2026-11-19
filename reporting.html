@@ -98,7 +98,15 @@
   <aside id="drawer" class="drawer" aria-hidden="true"><button id="close-drawer" class="close" aria-label="Close link details">×</button><div id="drawer-content"></div></aside>
   <div id="toast" class="toast" role="status"></div>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script type="module" src="./app.js?v=20260811-admin-matrix"></script>
-  <script defer src="./site-enhance.js?v=1"></script>
+  <script>
+    document.querySelectorAll('.tab[data-view], [data-open-view]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var view = btn.dataset.view || btn.dataset.openView;
+        document.querySelectorAll('.tab[data-view]').forEach(function (t) { t.classList.toggle('active', t.dataset.view === view); });
+        document.querySelectorAll('main .view').forEach(function (v) { v.classList.toggle('active', v.id === view); });
+      });
+    });
+  </script>
+  <script defer src="./site-enhance.js?v=20261119-apple-light-1"></script>
 </body>
 </html>

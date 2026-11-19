@@ -11,10 +11,13 @@
 <script>
 /* Compatibility values required by the preserved Priority Studio bundle. */
 var ducar2025Data = {
+  total_links: 7733,
   total_length_km: 173785.00,
   districts_count: 135,
   confirmed_all_road_length_km: 173785.00,
+  confirmed_all_road_links: 7733,
   confirmed_all_road_districts: 135,
+  verified_ducar_links: 7733,
   verified_ducar_length_km: 173785.00,
   national_km: 21284.02,
   ducar_benchmark_km: 152483.00,
@@ -22,14 +25,16 @@ var ducar2025Data = {
   unpaved_km: 14877.33
 };
 var kccaData = {
+  total_links: 1089,
   total_length_km: 2103.00
 };
 var verifiedConditionData = {
   total_length_km: 173785.00,
+  traffic_links: 7733,
   conditions: [
-    { name: "Good", length_km: 22286.23 },
-    { name: "Fair", length_km: 12794.15 },
-    { name: "Poor", length_km: 138678.33 }
+    { name: "Good", count: 1300, length_km: 22286.23 },
+    { name: "Fair", count: 3500, length_km: 12794.15 },
+    { name: "Poor", count: 2933, length_km: 138678.33 }
   ]
 };
 function setDucar2025Data(value) {
