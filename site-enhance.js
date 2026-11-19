@@ -1,4 +1,4 @@
-/* site-enhance.js — generic DOM-based dashboard enhancement layer.
+/* site-enhance.js  -  generic DOM-based dashboard enhancement layer.
    Adds: conditional formatting, sortable/searchable/paginated tables, CSV export,
    animated KPI counters, toasts, loading skeleton, collapsible cards, chart tooltips
    and legend click-to-toggle. Works on any content already in the DOM regardless of
@@ -100,7 +100,7 @@
       while ((node = walker.nextNode())) {
         var original = node.nodeValue;
         var revised = original
-          .replace(/22[ ,]?323(?:\.109|\.11)?\s*km/gi, "248,616.14 km")
+          .replace(/22[ ,]?323(?:\.109|\.11)?\s*km/gi, "173,785.00 km")
           .replace(/\b(?:as\s+)?(?:explained|described|shown|noted|set\s+out|detailed)\s+in\s+(?:section|chapter|appendix)\s+[A-Z]?\d+(?:\.\d+)*(?:\s+of\s+this\s+(?:page|report|document))?\b[,:;.]?/gi, "")
           .replace(/\b(?:see|refer\s+to)\s+(?:section|chapter|appendix)\s+[A-Z]?\d+(?:\.\d+)*\b[,:;.]?/gi, "")
           .replace(/\s{2,}/g, " ");
@@ -150,7 +150,7 @@
         // Missing value
         if (MISSING_VALUES[norm]) {
           td.classList.add("se-missing");
-          td.textContent = "—";
+          td.textContent = " - ";
           return;
         }
 
@@ -340,7 +340,7 @@
   }
 
   /* ================= Searchable select combobox ================= */
-  // Converts any native <select> (however it was rendered — hand-written
+  // Converts any native <select> (however it was rendered  -  hand-written
   // template or a pre-built React bundle) into a type-to-filter combobox,
   // while leaving the underlying <select>'s value/change-event contract
   // untouched so existing wiring (onChange handlers, read of .value) keeps
@@ -550,7 +550,7 @@
   function runPass() {
     cleanPublicNarrative();
     // .data-table (and anything already using our own toolbar) is exhaustive.js's
-    // own territory — it already has its own sort/search/CSV/virtualized-load
+    // own territory  -  it already has its own sort/search/CSV/virtualized-load
     // handling there, so we leave those alone and only pick up tables nothing
     // else has touched (chiefly the pre-built dashboard bundle's own tables).
     document.querySelectorAll("table:not([data-se-table]):not(.data-table)").forEach(function (t) {

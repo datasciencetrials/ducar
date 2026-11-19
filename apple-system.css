@@ -403,3 +403,89 @@ svg text {
   }
 }
 
+
+
+/* ==========================================================================
+   Strict Apple HIG Light Theme Enforcement (Zero Dark Backgrounds)
+   ========================================================================== */
+:root {
+  --apple-bg: #F5F5F7;
+  --apple-surface: #FFFFFF;
+  --apple-text: #0F172A;
+  --apple-line: #E2E8F0;
+  --apple-blue: #0071E3;
+  --apple-green: #16A34A;
+  --apple-amber: #D97706;
+  --apple-red: #DC2626;
+  --apple-purple: #7C3AED;
+  --apple-teal: #0D9488;
+}
+
+html, body, #root, #exhaustive-root, .exhaustive-shell {
+  background: #F5F5F7 !important;
+  color: #0F172A !important;
+}
+
+.leaflet-tooltip,
+.leaflet-control-attribution,
+.leaflet-control-scale-line,
+.map-toolrail,
+.map-toolrail button,
+.map-basemap-popover,
+.map-coordinate,
+.map-detail-status,
+.map-compass,
+.se-toast,
+#se-skeleton-overlay,
+.drawer,
+.modal,
+.mind-map-canvas,
+.mind-inspector,
+.mind-schematic,
+.platform-mind-svg,
+.catalogue-layers,
+.map-details {
+  background: #FFFFFF !important;
+  color: #0F172A !important;
+  border-color: #E2E8F0 !important;
+}
+
+.map-toolrail button:hover,
+.map-toolrail button.active {
+  background: #EFF6FF !important;
+  color: #0071E3 !important;
+  border-color: #0071E3 !important;
+}
+
+.leaflet-tooltip *,
+.leaflet-popup-content-wrapper *,
+.maplibregl-popup-content *,
+.map-basemap-popover *,
+.mind-inspector * {
+  color: #0F172A !important;
+}
+
+.mind-svg-node rect {
+  fill: #FFFFFF !important;
+  stroke: var(--node-color, #0071E3) !important;
+  stroke-width: 2px !important;
+}
+
+.mind-svg-node text {
+  fill: #0F172A !important;
+}
+
+.mind-svg-node.selected rect {
+  fill: #EFF6FF !important;
+  stroke: #0071E3 !important;
+  stroke-width: 3px !important;
+}
+
+.mind-edge {
+  stroke: #CBD5E1 !important;
+}
+
+.mind-edge.connected {
+  stroke: #0071E3 !important;
+  stroke-width: 2.5px !important;
+}

@@ -1,5 +1,5 @@
 /**
- * DUCAR Priority Studio — Standalone Keyboard Shortcuts Engine
+ * DUCAR Priority Studio  -  Standalone Keyboard Shortcuts Engine
  * Keyboard bindings:
  * - Ctrl/Cmd+K or F: Focus search box
  * - Esc: Clear focus / close active modal or help panel

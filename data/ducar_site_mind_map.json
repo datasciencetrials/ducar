@@ -37,7 +37,7 @@
     },
     {
       "id": "global",
-      "label": "Global",
+      "label": "International Benchmarks",
       "type": "section"
     },
     {
@@ -51,57 +51,49 @@
       "type": "section"
     },
     {
-      "id": "admin",
-      "label": "Admin Tools",
+      "id": "documentation",
+      "label": "Platform Documentation",
       "type": "section"
     },
     {
       "id": "approved_inventory",
-      "label": "Governed DUCAR Inventory - 31,106 Links",
-      "type": "data",
-      "records": 31106
+      "label": "Governed DUCAR Inventory (173,785.00 km)",
+      "type": "data"
     },
     {
       "id": "hotosm_vehicular",
-      "label": "Corrected Vehicular Network - 404,047 Ways - 248,616.15 km",
-      "type": "data",
-      "records": 404047
+      "label": "National & DUCAR Spatial Network",
+      "type": "data"
     },
     {
       "id": "verified_links",
-      "label": "Verified Web Analytics Register · 7,733 Links",
-      "type": "data",
-      "records": 7733
+      "label": "Verified Web Analytics Register",
+      "type": "data"
     },
     {
       "id": "master_attributes",
-      "label": "Master Workbook · 51 Link Attributes",
-      "type": "data",
-      "records": 31106
+      "label": "Master Network Attributes",
+      "type": "data"
     },
     {
       "id": "structures_data",
       "label": "Structure Occurrences",
-      "type": "data",
-      "records": 2290
+      "type": "data"
     },
     {
       "id": "relations",
       "label": "Administrative Relations",
-      "type": "data",
-      "records": 24174
+      "type": "data"
     },
     {
       "id": "global_evidence",
       "label": "Global Governance Evidence Register",
-      "type": "data",
-      "records": 195
+      "type": "data"
     },
     {
       "id": "socio_data",
       "label": "Socioeconomic Geospatial Joins",
-      "type": "data",
-      "records": 7733
+      "type": "data"
     },
     {
       "id": "sql",
@@ -115,33 +107,28 @@
     },
     {
       "id": "ml_registry",
-      "label": "Road Attribute Model Registry - 404,047 Features",
-      "type": "data",
-      "records": 404047
+      "label": "Road Attribute Model Registry",
+      "type": "data"
     },
     {
       "id": "merged_routes",
       "label": "County-Bounded Merged Route Register - 266,896 Routes",
-      "type": "data",
-      "records": 266896
+      "type": "data"
     },
     {
       "id": "segment_lineage",
       "label": "HOTOSM Segment-to-Route Lineage",
-      "type": "data",
-      "records": 404047
+      "type": "data"
     },
     {
       "id": "road_source_library",
       "label": "Road Shapefile and Workbook Source Library",
-      "type": "data",
-      "records": 705
+      "type": "data"
     },
     {
       "id": "ri_data_submissions",
-      "label": "RI_DATA District Submissions - 27,956 Rows - 324 Tables",
-      "type": "data",
-      "records": 27956
+      "label": "RI_DATA District Submissions -  - 324 Tables",
+      "type": "data"
     },
     {
       "id": "spatial_conflation",
@@ -187,7 +174,6 @@
       "id": "drive_deliverables",
       "label": "Google Drive · Final Deliverables · 547 Authoritative Files",
       "type": "data",
-      "records": 547,
       "url": "https://drive.google.com/drive/folders/14d5VWbpciRBLi0Tu5zE30FhO9rKR92sW?usp=sharing"
     }
   ],
@@ -230,7 +216,7 @@
     },
     {
       "from": "studio",
-      "to": "admin"
+      "to": "documentation"
     },
     {
       "from": "approved_inventory",
@@ -238,7 +224,7 @@
     },
     {
       "from": "approved_inventory",
-      "to": "admin"
+      "to": "documentation"
     },
     {
       "from": "hotosm_vehicular",
@@ -278,7 +264,7 @@
     },
     {
       "from": "hotosm_vehicular",
-      "to": "admin"
+      "to": "documentation"
     },
     {
       "from": "master_attributes",
@@ -286,7 +272,7 @@
     },
     {
       "from": "master_attributes",
-      "to": "admin"
+      "to": "documentation"
     },
     {
       "from": "verified_links",
@@ -314,7 +300,7 @@
     },
     {
       "from": "relations",
-      "to": "admin"
+      "to": "documentation"
     },
     {
       "from": "global_evidence",
@@ -326,7 +312,7 @@
     },
     {
       "from": "sql",
-      "to": "admin"
+      "to": "documentation"
     },
     {
       "from": "evidence",
@@ -334,7 +320,7 @@
     },
     {
       "from": "evidence",
-      "to": "admin"
+      "to": "documentation"
     },
     {
       "from": "ml_registry",
@@ -346,7 +332,7 @@
     },
     {
       "from": "ml_registry",
-      "to": "admin"
+      "to": "documentation"
     },
     {
       "from": "road_source_library",
@@ -374,7 +360,7 @@
     },
     {
       "from": "ri_data_submissions",
-      "to": "admin"
+      "to": "documentation"
     },
     {
       "from": "hotosm_vehicular",
@@ -450,7 +436,7 @@
     },
     {
       "from": "map_renderer",
-      "to": "admin"
+      "to": "documentation"
     },
     {
       "from": "sql",
@@ -466,12 +452,12 @@
     },
     {
       "from": "drive_deliverables",
-      "to": "admin"
+      "to": "documentation"
     },
     {
       "from": "export_service",
-      "to": "admin"
+      "to": "documentation"
     }
   ],
-  "record_policy": "The corrected 248,616.15 km and 404,047-way vehicular inventory drives public national geometry and map reporting. RI_DATA district workbooks are governed attribute evidence and never replace validated geometry or totals. Governed DUCAR links drive Link-ID, structure, cost and intervention relations. Supplied traffic remains Observed; gaps are explicitly Model estimated with confidence and percentile bounds."
+  "record_policy": "Select any node to inspect its role and connected platform paths."
 }
