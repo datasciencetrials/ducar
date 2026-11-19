@@ -1151,7 +1151,7 @@
       {name:"System parameter completeness",values:parameterRows.map(row=>({name:label(row.field),value:row.suppliedKm})),unit:"affected km"},
       {name:"Database store population",values:database.tables.map(table=>({name:table.table,value:Number(table.row_count||0)})),unit:"records"}
     ];
-    return metricCards([{label:"Network geometry health",value:number(networkKm,1)+" km",note:"Complete DUCAR reporting denominator"},{label:"Valid Link-ID length",value:number(validIdKm,1)+" km",note:number(validIdKm/Math.max(networkKm,1)*100,1)+"% standard compliance"},{label:"Spatial admin length",value:number(spatial,1)+" km",note:"Polygon-intersected coverage"},{label:"AADT available length",value:number(trafficKm,1)+" km",note:"Observed and modelled values combined"}]) + `<div class="chart-grid">${charts}</div>`+interactiveGallery("System health · animated chart gallery",healthSeries)+insightWall("System health & administration · 50+ insight atlas",adminInsights);
+    return adminMindMapHtml() + metricCards([{label:"Network geometry health",value:number(networkKm,1)+" km",note:"Complete DUCAR reporting denominator"},{label:"Valid Link-ID length",value:number(validIdKm,1)+" km",note:number(validIdKm/Math.max(networkKm,1)*100,1)+"% standard compliance"},{label:"Spatial admin length",value:number(spatial,1)+" km",note:"Polygon-intersected coverage"},{label:"AADT available length",value:number(trafficKm,1)+" km",note:"Observed and modelled values combined"}]) + `<div class="chart-grid">${charts}</div>`+interactiveGallery("System health · animated chart gallery",healthSeries)+insightWall("Platform Documentation · 50+ insight atlas",adminInsights);
   }
   function sectionClusteredBreakdowns() {
     const links=activeLinkRows(),structures=(cache.structures?.rows||[]).map(row=>({...row,geometry_length_km:Number(row.allocated_road_length_km||0)})),socio=applyHeaderFilters(cache.socio?.rows||[]),relations=applyHeaderFilters(cache.relations||[]).map(row=>({...row,geometry_length_km:Number(row.covered_length_km||0)}));
@@ -1981,6 +1981,7 @@
     shell(body); normalizeMetricWording(root);removeCollapseControls(root);bind();initPageTools();enhanceStaticTableSorting();enhanceTableScrolling();if(state.tab==="records")mountRemainingRecords();
     if(usesCompleteNetworkRows()&&state.tab==="records"&&!cache.fullNetworkComplete)loadRemainingFullNetworkChunks().catch(error=>{const notice=root.querySelector(".records-load-notice");if(notice)notice.innerHTML=`<strong>Complete population search is temporarily unavailable</strong><span>${esc(error.message)}. The loaded records remain searchable.</span>`;});
     if (state.tab === "map") state.section==="summaries"?initAdminMindMap():state.section==="global"?initGlobalMap():initSectionMap();
+    else if (state.tab === "dashboard" && state.section === "summaries") initAdminMindMap();
     syncHeaderFilterPanel();
     ensureHeaderExportMenu();ensureHeaderNavigationControls();
     if (activeField) { const input=root.querySelector(activeField); input?.focus(); input?.setSelectionRange(input.value.length,input.value.length); }
