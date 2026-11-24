@@ -1,6 +1,6 @@
 {
   "name": "Uganda corrected full vehicular road detail tiles",
-  "source": "MoWT corrected full vehicular network alignment, August 2026",
+  "source": "National Roads corrected full vehicular network alignment, August 2026",
   "minimum_zoom": 11,
   "display_simplification_m": 2,
   "tile_count": 31,

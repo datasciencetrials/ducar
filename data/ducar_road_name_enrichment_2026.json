@@ -11,7 +11,7 @@
   "established_route_names": 5966,
   "sources": [
     {
-      "name": "MoWT/district road register",
+      "name": "National Roads/district road register",
       "path": "D:\\OneDrive\\Uganda National Road Network Repository\\DUCAR\\district roads\\dcroads2025.shp"
     },
     {

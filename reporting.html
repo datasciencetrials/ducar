@@ -4,14 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#f5f5f7" />
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
   <title>DUCAR Network &amp; Administrative Reporting</title>
   <meta name="description" content="Auditable road network and district-to-village spatial reporting for Uganda DUCAR." />
   <link rel="preconnect" href="https://unpkg.com" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="./exhaustive.css?v=20261119-apple-light-1" />
-  <link rel="stylesheet" href="./apple-light.css?v=20261119-apple-light-1" />
-  <link rel="stylesheet" href="./apple-system.css?v=20261119-apple-light-1" />
-  <link rel="stylesheet" href="./site-enhance.css?v=20261119-apple-light-1" />
+  <link rel="stylesheet" href="./exhaustive.css?v=20261123-apple-light-4" />
+  <link rel="stylesheet" href="./apple-light.css?v=20261123-apple-light-4" />
+  <link rel="stylesheet" href="./apple-system.css?v=20261123-apple-light-4" />
+  <link rel="stylesheet" href="./site-enhance.css?v=20261123-apple-light-4" />
 </head>
 <body>
   <div class="shell">
@@ -86,8 +87,8 @@
         <div class="method-grid">
           <article class="panel"><span class="step">01</span><h2>Repair coordinates</h2><p>Routes are reinterpreted in EPSG:32636, forced to two dimensions and transformed to EPSG:4326 for browser mapping.</p></article>
           <article class="panel"><span class="step">02</span><h2>Assign stable IDs</h2><p>Each link ID hashes its district, source code, road name and geometry; exact duplicates receive deterministic occurrence suffixes.</p></article>
-          <article class="panel"><span class="step">03</span><h2>Intersect villages</h2><p>Every line is intersected with 42,816 supplied village polygons. Boundary overlaps are proportionally scaled so a link cannot be double-counted.</p></article>
-          <article class="panel"><span class="step">04</span><h2>Join without invention</h2><p>AADT, PCU and speed are populated only from exact source-code matches. Missing traffic remains null and is measured as a coverage gap.</p></article>
+          <article class="panel"><span class="step">03</span><h2>Intersect administrative boundaries</h2><p>Every corridor is intersected with supplied administrative boundaries so lengths are proportionally allocated without double-counting.</p></article>
+          <article class="panel"><span class="step">04</span><h2>Join without invention</h2><p>AADT, PCU and speed are populated only from exact matches. Missing traffic is recorded as Not recorded and measured as a coverage gap in km.</p></article>
         </div>
         <article class="panel quality-panel"><div><p class="eyebrow">Automated audit</p><h2>Length agreement</h2></div><div id="quality-list"></div></article>
         <article class="panel caveat-panel"><p class="eyebrow">Material limitations</p><div id="caveats"></div></article>
@@ -107,6 +108,7 @@
       });
     });
   </script>
-  <script defer src="./site-enhance.js?v=20261119-apple-light-1"></script>
+  <script defer src="./reporting-app.js?v=20261123-apple-light-4"></script>
+  <script defer src="./site-enhance.js?v=20261123-apple-light-4"></script>
 </body>
 </html>

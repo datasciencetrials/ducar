@@ -1,7 +1,7 @@
 {
   "date": "2026-09-17",
   "repo": "uganda_ducar",
-  "url": "https://networkengineringmowt-ai.github.io/uganda_ducar/",
+  "url": "https://networkengineringnational_roads-ai.github.io/uganda_ducar/",
   "technical": {
     "httpStatus": 200,
     "loadFailed": false,
@@ -169,12 +169,12 @@
       {
         "value": 0,
         "raw": "0 km",
-        "context": "ped by MoWT functional classification."
+        "context": "ped by National Road Network functional classification."
       },
       {
         "value": 38187.6,
         "raw": "38,187.6 km",
-        "context": "y MoWT functional classification.\n\n0 km"
+        "context": "y National Road Network functional classification.\n\n0 km"
       },
       {
         "value": 76375.3,

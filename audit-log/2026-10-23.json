@@ -207,13 +207,13 @@
       {
         "value": 0,
         "raw": "0 km",
-        "context": "ped by MoWT functional classification.",
+        "context": "ped by National Road Network functional classification.",
         "afterContext": "38,187.6 km\n76,375.3 km\n114,562.9 km\n15"
       },
       {
         "value": 38187.6,
         "raw": "38,187.6 km",
-        "context": "y MoWT functional classification.\n\n0 km",
+        "context": "y National Road Network functional classification.\n\n0 km",
         "afterContext": "76,375.3 km\n114,562.9 km\n152,750.5 km\nC"
       },
       {
