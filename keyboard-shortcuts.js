@@ -21,7 +21,7 @@
     modal.style.left = '0';
     modal.style.width = '100vw';
     modal.style.height = '100vh';
-    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.75)';
+    modal.style.backgroundColor = 'rgba(15, 23, 42, 0.35)';
     modal.style.backdropFilter = 'blur(8px)';
     modal.style.zIndex = '999999';
     modal.style.alignItems = 'center';
@@ -29,37 +29,39 @@
     modal.style.display = 'none'; // Only display flex when active to prevent stray blocking!
 
     modal.innerHTML = `
-      <div style="background: #0f172a; border: 1px solid #00f3ff; border-radius: 16px; width: 460px; max-width: 90vw; padding: 24px; color: #fff; box-shadow: 0 0 30px rgba(0,243,255,0.3); font-family: Inter, system-ui, sans-serif;">
-        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px; margin-bottom: 16px;">
-          <h3 style="margin: 0; color: #00f3ff; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
-            <span style="background: rgba(0,243,255,0.2); padding: 4px 8px; border-radius: 6px;">⌨</span> Keyboard Shortcuts
+      <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 16px; width: 460px; max-width: 90vw; padding: 24px; color: #0F172A; box-shadow: 0 20px 48px rgba(15,23,42,0.18); font-family: Arial, -apple-system, sans-serif;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8F0; padding-bottom: 12px; margin-bottom: 16px;">
+          <h3 style="margin: 0; color: #0F172A; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
+            <span style="background: #EFF6FF; color: #0071E3; padding: 4px 8px; border-radius: 6px;">⌨</span> Keyboard Shortcuts
           </h3>
-          <button id="close-shortcuts-btn" style="background: none; border: none; color: #94a3b8; font-size: 1.4rem; cursor: pointer; padding: 0 4px;">&times;</button>
+          <button id="close-shortcuts-btn" style="background: #F8FAFC; border: 1px solid #E2E8F0; color: #475569; font-size: 1.2rem; cursor: pointer; padding: 2px 8px; border-radius: 8px;">&times;</button>
         </div>
         
         <div style="display: flex; flex-direction: column; gap: 12px; font-size: 0.88rem;">
           <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="color: #cbd5e1;">Focus Search Box</span>
-            <kbd style="background: #1e293b; border: 1px solid #334155; padding: 3px 8px; border-radius: 6px; color: #278a50; font-family: monospace;">Ctrl + K</kbd> or <kbd style="background: #1e293b; border: 1px solid #334155; padding: 3px 8px; border-radius: 6px; color: #278a50; font-family: monospace;">F</kbd>
-          </div>
-          <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="color: #cbd5e1;">Switch Between Tabs</span>
+            <span style="color: #334155;">Focus Search Box</span>
             <div>
-              <kbd style="background: #1e293b; border: 1px solid #334155; padding: 3px 8px; border-radius: 6px; color: #a4478f; font-family: monospace;">&larr;</kbd> / <kbd style="background: #1e293b; border: 1px solid #334155; padding: 3px 8px; border-radius: 6px; color: #a4478f; font-family: monospace;">&rarr;</kbd>
+              <kbd style="background: #F1F5F9; border: 1px solid #CBD5E1; padding: 3px 8px; border-radius: 6px; color: #16A34A; font-family: monospace;">Ctrl + K</kbd> or <kbd style="background: #F1F5F9; border: 1px solid #CBD5E1; padding: 3px 8px; border-radius: 6px; color: #16A34A; font-family: monospace;">F</kbd>
             </div>
           </div>
           <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="color: #cbd5e1;">Clear Focus / Close Modal</span>
-            <kbd style="background: #1e293b; border: 1px solid #334155; padding: 3px 8px; border-radius: 6px; color: #c47a13; font-family: monospace;">Esc</kbd>
+            <span style="color: #334155;">Switch Between Tabs</span>
+            <div>
+              <kbd style="background: #F1F5F9; border: 1px solid #CBD5E1; padding: 3px 8px; border-radius: 6px; color: #7C3AED; font-family: monospace;">&larr;</kbd> / <kbd style="background: #F1F5F9; border: 1px solid #CBD5E1; padding: 3px 8px; border-radius: 6px; color: #7C3AED; font-family: monospace;">&rarr;</kbd>
+            </div>
           </div>
           <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="color: #cbd5e1;">Toggle Shortcuts Help</span>
-            <kbd style="background: #1e293b; border: 1px solid #334155; padding: 3px 8px; border-radius: 6px; color: #00f3ff; font-family: monospace;">?</kbd>
+            <span style="color: #334155;">Clear Focus / Close Modal</span>
+            <kbd style="background: #F1F5F9; border: 1px solid #CBD5E1; padding: 3px 8px; border-radius: 6px; color: #D97706; font-family: monospace;">Esc</kbd>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="color: #334155;">Toggle Shortcuts Help</span>
+            <kbd style="background: #F1F5F9; border: 1px solid #CBD5E1; padding: 3px 8px; border-radius: 6px; color: #0071E3; font-family: monospace;">?</kbd>
           </div>
         </div>
 
         <div style="margin-top: 20px; text-align: right;">
-          <button id="dismiss-shortcuts-btn" style="background: rgba(0,243,255,0.15); border: 1px solid #00f3ff; color: #00f3ff; padding: 6px 16px; border-radius: 8px; cursor: pointer; font-weight: 600;">Got It</button>
+          <button id="dismiss-shortcuts-btn" style="background: #0071E3; border: 1px solid #0071E3; color: #FFFFFF; padding: 7px 16px; border-radius: 8px; cursor: pointer; font-weight: 600;">Got It</button>
         </div>
       </div>
     `;

@@ -2490,3 +2490,225 @@ main .view.active { display: block; }
 .drawer[aria-hidden="false"] { transform: translateX(0); }
 .drawer .close { float: right; border: 1px solid #CBD5E1; background: #F8FAFC; color: #0F172A; border-radius: 8px; width: 32px; height: 32px; cursor: pointer; font-size: 18px; }
 @media (max-width: 900px) { .hero, .overview-grid { grid-template-columns: 1fr; } }
+
+/* ==========================================================================
+   Complete Residual Dark-Surface Elimination (Apple HIG Light Theme)
+   ========================================================================== */
+.ranked-matrix > div {
+  background: #F8FAFC !important;
+  color: #0F172A !important;
+  border: 1px solid #E2E8F0 !important;
+}
+.ranked-matrix > div > b {
+  background: #EFF6FF !important;
+  color: #0071E3 !important;
+}
+.ranked-matrix > div > i {
+  background: #E2E8F0 !important;
+}
+.ranked-matrix > div > small {
+  color: #475569 !important;
+}
+
+.map-workspace,
+.section-map,
+.leaflet-container,
+.map-workspace:fullscreen,
+.map-fullscreen-fallback {
+  background: #F5F5F7 !important;
+  border-color: #E2E8F0 !important;
+}
+
+.mind-map-key {
+  background: #FFFFFF !important;
+  border-bottom: 1px solid #E2E8F0 !important;
+}
+.mind-map-key .key-root { color: #0071E3 !important; }
+.mind-map-key .key-section { color: #16A34A !important; }
+.mind-map-key .key-process { color: #D97706 !important; }
+.mind-map-key .key-data { color: #7C3AED !important; }
+
+.mind-branches section {
+  background: #F8FAFC !important;
+  border-color: #E2E8F0 !important;
+}
+.mind-branches h4 { color: #0071E3 !important; }
+.mind-node,
+.mind-map-canvas .mind-node {
+  background: #FFFFFF !important;
+  color: #0F172A !important;
+  border: 1px solid #E2E8F0 !important;
+}
+.mind-node small { color: #475569 !important; }
+
+.insight-wall,
+.chart-type-section,
+.analytics-intro,
+.analytics-block,
+.source-grid a,
+.category-grid span,
+.dashboard-jump,
+.dashboard-jump a,
+.monolithic-section,
+.monolithic-title,
+.unified-viz .viz-heading,
+.admin-map-toolbar {
+  background: #FFFFFF !important;
+  color: #0F172A !important;
+  border-color: #E2E8F0 !important;
+}
+.analytics-intro small,
+.analytics-block > header small,
+.insight-heading small,
+.viz-heading small,
+.selection-title small,
+.mind-inspector small {
+  color: #0071E3 !important;
+}
+.insight-heading > strong {
+  background: #EFF6FF !important;
+  border-color: #BFDBFE !important;
+  color: #0071E3 !important;
+}
+.source-grid a:hover {
+  border-color: #0071E3 !important;
+  background: #F8FAFC !important;
+}
+.category-grid span {
+  background: #F8FAFC !important;
+  border: 1px solid #E2E8F0 !important;
+  color: #334155 !important;
+}
+.category-grid strong { color: #0071E3 !important; }
+
+.radial-chart.donut:after {
+  background: #FFFFFF !important;
+  box-shadow: inset 0 0 10px rgba(15, 23, 42, .08) !important;
+}
+.radial-center strong { color: #0F172A !important; }
+.radial-center small { color: #475569 !important; }
+
+.viz-autoplay,
+.viz-switcher button,
+.pages button,
+.ibp-filter-btn {
+  background: #FFFFFF !important;
+  color: #0F172A !important;
+  border: 1px solid #CBD5E1 !important;
+}
+.viz-autoplay:hover,
+.viz-autoplay.active,
+.viz-switcher button:hover,
+.viz-switcher button.active,
+.ibp-filter-btn:hover,
+.ibp-filter-btn.active {
+  background: #0071E3 !important;
+  border-color: #0071E3 !important;
+  color: #FFFFFF !important;
+}
+
+.micro-bar,
+.micro-stacked,
+.micro-bullet,
+.micro-lollipop:before {
+  background: #E2E8F0 !important;
+}
+.micro-ring,
+.micro-pie {
+  background: conic-gradient(var(--accent) var(--pct), #E2E8F0 0) !important;
+}
+.micro-ring i,
+.micro-gauge i,
+.micro-lollipop b,
+.micro-scatter i,
+.micro-scatter b,
+.micro-scatter em,
+.micro-scatter span {
+  background: #FFFFFF !important;
+  box-shadow: 0 0 0 2px #FFFFFF !important;
+}
+.micro-gauge:before {
+  background: conic-gradient(from 270deg, var(--accent) var(--half), #E2E8F0 0 50%, transparent 0) !important;
+}
+.micro-ring b,
+.micro-gauge b,
+.micro-heat b {
+  color: #0F172A !important;
+  text-shadow: none !important;
+}
+.micro-pie b {
+  background: rgba(255, 255, 255, .88) !important;
+  color: #0F172A !important;
+  text-shadow: none !important;
+}
+.micro-treemap b,
+.micro-treemap em {
+  background: color-mix(in srgb, var(--accent) 25%, #F1F5F9) !important;
+}
+.micro-treemap span {
+  color: #FFFFFF !important;
+  text-shadow: 0 1px 2px rgba(15, 23, 42, .45) !important;
+}
+
+.map-search input {
+  background: #FFFFFF !important;
+  color: #0F172A !important;
+  border-color: #CBD5E1 !important;
+}
+.map-search button {
+  background: #0071E3 !important;
+  border-color: #0071E3 !important;
+  color: #FFFFFF !important;
+}
+.district-map-label {
+  background: #FFFFFF !important;
+  color: #0F172A !important;
+  border: 1px solid #CBD5E1 !important;
+  text-shadow: none !important;
+}
+.selection-insights span {
+  background: #F8FAFC !important;
+  border-color: #E2E8F0 !important;
+  color: #475569 !important;
+}
+.selection-insights b { color: #0F172A !important; }
+.selection-report h5 { color: #334155 !important; }
+.selection-report > div { border-color: #E2E8F0 !important; }
+.selection-report span { color: #475569 !important; }
+.selection-report b { color: #0F172A !important; }
+.global-layer-stat { color: #475569 !important; }
+.global-layer-stat b { color: #0F172A !important; }
+
+.health-meter { background: #E2E8F0 !important; }
+.health-meter span { color: #0F172A !important; text-shadow: none !important; }
+.funnel-chart polygon { stroke: #FFFFFF !important; }
+
+.cell-zero { background: #F8FAFC !important; color: #64748B !important; }
+.cell-numeric { color: #0F172A !important; }
+.not-supplied { color: #B45309 !important; }
+.cell-good, .cell-low, .cell-paved, .analytic-good, .check-pass {
+  background: #DCFCE7 !important; color: #166534 !important;
+}
+.cell-fair, .cell-moderate, .analytic-warn {
+  background: #FEF3C7 !important; color: #92400E !important;
+}
+.cell-high, .cell-unpaved {
+  background: #FFEDD5 !important; color: #9A3412 !important;
+}
+.cell-poor, .cell-critical, .analytic-bad, .check-fail {
+  background: #FEE2E2 !important; color: #991B1B !important;
+}
+
+.codex-injected-active {
+  background: #0071E3 !important;
+  border-color: #0071E3 !important;
+  color: #FFFFFF !important;
+}
+
+@media (max-width: 800px) {
+  #root .nav-rail {
+    background: rgba(255, 255, 255, 0.96) !important;
+    box-shadow: 0 -4px 20px rgba(15, 23, 42, .1) !important;
+    border-top: 1px solid #E2E8F0 !important;
+  }
+}

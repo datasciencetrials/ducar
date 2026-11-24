@@ -1,5 +1,5 @@
 {
-  "generated_by": "UNRA DUCAR local geospatial+ML pipeline",
+  "generated_by": "National Road Network DUCAR local geospatial+ML pipeline",
   "data_vintage": "DUCAR_Master_Workbook.xlsx All Records (audited, 31106 links) + Uganda district admin shapefile (UBOS-derived)",
   "n_links_analyzed": 30932,
   "n_districts": 135,

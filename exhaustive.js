@@ -177,7 +177,7 @@
   };
   const REGION_CENTROIDS = { Central: { lat: 0.7, lng: 31.8 }, Eastern: { lat: 1.3, lng: 33.9 }, Northern: { lat: 2.8, lng: 32.6 }, Western: { lat: -0.3, lng: 30.4 } };
   const UGANDA_CENTROID = { lat: 1.3733, lng: 32.2903 };
-  const CONFIRMED_NETWORK_FALLBACK = { length_km: 173785.00, national_road_km: 21284.02, paved_km: 6406.69, bridges: 552, major_culverts: 452, districts: 135 };
+  const CONFIRMED_NETWORK_FALLBACK = { length_km: 173785.00, national_road_km: 21284.02, ducar_km: 152483.00, district_km: 41194.00, urban_km: 33755.00, community_km: 75404.00, kcca_km: 2130.00, paved_km: 6406.69, bridges: 552, major_culverts: 452, districts: 135 };
   const UGANDA_LAND_AREA_SQKM = 200520;
   const MAINTENANCE_REGIONS = ["Central","Eastern","North Eastern","Northern","Southern","Western"];
   const MAINTENANCE_STATIONS = ["Arua","Fort Portal","Gulu","Hoima","Ibanda","Jinja","Kabale","Kampala","Kasese","Kitgum","Kotido","Lira","Luwero","Masaka","Masindi","Mbale","Mbarara","Moroto","Moyo","Mpigi","Mubende","Soroti","Tororo"];
@@ -376,7 +376,7 @@
     return {...source,rows,class_summary:summary("structure_class"),condition_summary:summary("current_condition"),risk_summary:summary("risk_band"),metadata:{...(source.metadata||{}),structure_occurrences:rows.length,linked_structure_occurrences:rows.filter(row=>shown(row.link_id)!=="Not supplied").length,road_length_with_structures_km:rows.reduce((sum,row)=>sum+Number(row.allocated_road_length_km||0),0)}};
   }
   const DISPLAY_ACRONYMS={aadt:"AADT",pcu:"PCU",adt:"ADT",id:"ID",ids:"IDs",km:"km",kmh:"km/h",dd:"DD",ugx:"UGX",kcca:"KCCA",ducar:"DUCAR",pims:"PIMS",hdm4:"HDM-4",osm:"OSM",hotosm:"HOTOSM",sql:"SQL",gis:"GIS",national_roads:"National Road Network",wgs84:"WGS84"};
-  const FIELD_LABELS={planning_cost_per_km_ugx:"Planning Cost per km (UGX/km)",planning_unit_cost_ugx_km:"Planning Unit Cost (UGX/km)",planning_works_cost_ugx:"Planning Works Cost (UGX)",planning_preparation_supervision_ugx:"Preparation and Supervision (UGX)",planning_risk_contingency_ugx:"Risk Contingency (UGX)",planning_cost_ugx:"Total Planning Allowance (UGX)",geometry_length_km:"Geometry Length (km)",source_length_km:"Source Length (km)",allocated_road_length_km:"Allocated Road Length (km)",pavement_class:"Surface Type",surface:"Pavement Material"};
+  const FIELD_LABELS={planning_cost_per_km_ugx:"Planning Cost per km (UGX/km)",planning_unit_cost_ugx_km:"Planning Unit Cost (UGX/km)",planning_works_cost_ugx:"Planning Works Cost (UGX)",planning_preparation_supervision_ugx:"Preparation and Supervision (UGX)",planning_risk_contingency_ugx:"Risk Contingency (UGX)",planning_cost_ugx:"Total Planning Allowance (UGX)",geometry_length_km:"Geometry Length (km)",source_length_km:"Source Length (km)",allocated_road_length_km:"Allocated Road Length (km)",pavement_class:"Surface Type",surface:"Pavement Material",admin_district:"Administrative District",admin_coverage:"Administrative Coverage",government_department:"Road Management Authority"};
   function isLengthField(field){return /(^|_)(length|distance|chainage)_km$/.test(String(field))||/^(length_km|geometry_length_km|covered_length_km|allocated_road_length_km)$/.test(String(field));}
   function label(value) { const key=String(value);if(FIELD_LABELS[key])return FIELD_LABELS[key];let result=key.replaceAll("_", " ").split(/\s+/).map(word=>DISPLAY_ACRONYMS[word.toLowerCase()]||word.charAt(0).toUpperCase()+word.slice(1).toLowerCase()).join(" ");if(isLengthField(key))result=result.replace(/\s+km$/i," (km)");return result; }
   function properText(value) {
@@ -399,7 +399,7 @@
     return SECTION_TABS.some(([tab]) => tab === id) ? id : "dashboard";
   }
   function sectionFromTitle(title) {
-    const map = { TOP: "overview", "DUCAR Dashboard": "ducar", Network: "network", Traffic: "traffic", Condition: "condition", Structures: "structures", PIMS: "pims", "HDM-4": "hdm4", Framework: "framework", "Budgets & Prioritization": "budgets", "Priority Studio": "budgets", Global: "global", "Global Benchmarks": "global", "International Benchmarks": "global", "Socioeconomic Analysis": "socioeconomic", "Summaries & Admin Tools": "summaries", "Admin Tools": "summaries" };
+    const map = { TOP: "overview", "DUCAR Dashboard": "ducar", Network: "network", Traffic: "traffic", Condition: "condition", Structures: "structures", PIMS: "pims", "HDM-4": "hdm4", Framework: "framework", "Budgets & Prioritization": "budgets", "Priority Studio": "budgets", Global: "global", "Global Benchmarks": "global", "International Benchmarks": "global", "Socioeconomic Analysis": "socioeconomic", "Platform Documentation": "summaries" };
     return map[title] || null;
   }
   async function data(key) {
@@ -495,7 +495,7 @@
   function number(value, digits = 0) { const numeric=Number(value||0),authoritative=Math.abs(numeric-Number(confirmedNetwork().length_km||0))<.01,precision=authoritative?2:digits;return numeric.toLocaleString(undefined,{maximumFractionDigits:precision,minimumFractionDigits:authoritative?2:0}); }
   function hasNumeric(value) { return value !== null && value !== undefined && value !== "" && Number.isFinite(Number(value)); }
   function confirmedNetwork() { return CONFIRMED_NETWORK_FALLBACK; }
-  function nationalRoadKm() { return Number(cache.nationalAudit?.official_comparison?.approved_headline_km||CONFIRMED_NETWORK_FALLBACK.national_road_km); }
+  function nationalRoadKm() { return CONFIRMED_NETWORK_FALLBACK.national_road_km; }
   function nationalRoadActual() {
     const audit=cache.nationalAudit||{};
     return {
@@ -886,7 +886,7 @@
   }
   function nationalNetworkReconciliation(rows) {
     const confirmed=confirmedNetwork();
-    const official={total:173785.00,national:21284.02,urban:35858.00,district:41194.00,community:75404.00,ducar:152500.98,pavedNational:6406.69,unpavedNational:14877.33,candidateDucar:67551.55};
+    const official={total:173785.00,national:21284.02,district:41194.00,urban:33755.00,community:75404.00,kcca:2130.00,ducar:152483.00,pavedNational:6406.69,unpavedNational:14877.33,candidateDucar:67551.55};
     const fullRows=Array.isArray(cache.links)&&cache.links.length?cache.links:rows;
     const km=list=>list.reduce((sum,row)=>sum+Number(row.geometry_length_km||0),0);
     const selectedKm=km(rows), verified=km(fullRows), additional=Math.max(0,official.candidateDucar-verified), unresolved=Math.max(0,official.ducar-official.candidateDucar);
@@ -903,7 +903,7 @@
       ["Priority bands",priorityKm,verified,priorityKm-verified,"Critical + High + Moderate + Low"]
     ];
     const rowsHtml=[
-      ["Official DUCAR benchmark",official.ducar,100,"District, KCCA, City, Community Access, Town Council and Municipal Roads"],
+      ["Official DUCAR benchmark",official.ducar,100,"District (41,194.00 km), Urban (33,755.00 km), Community Access (75,404.00 km) & KCCA (2,130.00 km)"],
       ["Candidate DUCAR analysis layer",official.candidateDucar,official.candidateDucar/official.ducar*100,"Included and pending-validation non-national road candidates"],
       ["Measured register extent",verified,verified/official.ducar*100,"Assigned National Road Network-format identifiers with measured geometry"],
       ["Candidate expansion beyond register",additional,additional/official.ducar*100,"Requires statutory ownership, duplication and district validation"],
@@ -911,12 +911,12 @@
     ];
     const filteredNotice=rows.length!==fullRows.length?`<div class="scope-notice"><strong>Active filtered selection</strong><span>${number(selectedKm,2)} km (${number(selectedKm/Math.max(verified,1)*100,1)}% of measured register). National benchmark and register reconciliation remain fixed to the complete register.</span></div>`:"";
     const controls=`<section class="consistency-controls"><header><div><small>REPORTING CONSISTENCY CONTROLS</small><h4>Every classification reconciles to one measured register</h4></div><span class="consistency-badge">Consistent km totals</span></header><div class="table-wrap consistency-table"><table class="data-table"><thead><tr><th>Control</th><th>Classified km</th><th>Register km</th><th>Variance km</th><th>Basis</th></tr></thead><tbody>${controlRows.map(row=>`<tr><td>${esc(row[0])}</td><td>${number(row[1],3)}</td><td>${number(row[2],3)}</td><td class="${Math.abs(row[3])<.0005?"check-pass":"check-fail"}">${number(row[3],3)}</td><td>${esc(row[4])}</td></tr>`).join("")}</tbody></table></div><p>Official planning benchmarks are reference targets and are never substituted for measured geometry.</p></section>`;
-    return `<section class="benchmark-panel"><header><div><small>NATIONAL INVENTORY AND DUCAR RECONCILIATION · FY 2026/27</small><h3>Authoritative all-road inventory and DUCAR analytical coverage</h3><p>National Roads (21,284.02 km: 6,406.69 km paved and 14,877.33 km unpaved) and DUCAR components are reported strictly in km and %.</p></div><button class="pdf-download" data-section-pdf type="button">PDF reconciliation</button></header>${filteredNotice}${metricCards([
-      {label:"Total Uganda road network",value:number(official.total,2)+" km",note:number(confirmed.districts)+" districts"},
-      {label:"National Road Network",value:number(official.national,2)+" km",note:"Paved 6,406.69 km (30.10%) · Unpaved 14,877.33 km (69.90%)"},
-      {label:"DUCAR road network",value:number(official.ducar,2)+" km",note:"District, Urban and Community Access Roads"},
+    return `<section class="benchmark-panel"><header><div><small>NATIONAL INVENTORY AND DUCAR RECONCILIATION · FY 2026/27</small><h3>Authoritative all-road inventory and DUCAR analytical coverage</h3><p>Total National DUCAR Network: 152,483.00 km (District Roads 41,194.00 km, Urban Roads 33,755.00 km, Community Access Roads 75,404.00 km, KCCA 2,130.00 km) and National Roads baseline: 21,284.02 km (6,406.69 km paved and 14,877.33 km unpaved).</p></div><button class="pdf-download" data-section-pdf type="button">PDF reconciliation</button></header>${filteredNotice}${metricCards([
+      {label:"Total National DUCAR Network",value:number(official.ducar,2)+" km",note:"District 41,194.00 km · Urban 33,755.00 km · CAR 75,404.00 km · KCCA 2,130.00 km"},
+      {label:"National Roads Baseline",value:number(official.national,2)+" km",note:"Paved 6,406.69 km (30.10%) · Unpaved 14,877.33 km (69.90%)"},
+      {label:"Total Uganda Road Network",value:number(official.total,2)+" km",note:"National + District + Urban + Community Access + KCCA"},
       {label:"Administrative coverage",value:number(confirmed.districts)+" districts",note:"National administrative reporting extent"}
-    ])}<div class="chart-grid">${barChart("Authoritative road network composition","Total Uganda Road Network (173,785.00 km) by statutory management class.",[{name:"National Roads",value:official.national},{name:"District Roads",value:official.district},{name:"Community Access Roads",value:official.community},{name:"Urban Roads (Town, Municipal, City, KCCA)",value:official.urban}],"km",COLORS[0])}${barChart("DUCAR reconciliation coverage","Measured, candidate-expansion and unresolved lengths.",[{name:"Measured register extent",value:verified},{name:"Additional candidate geometry",value:additional},{name:"Unresolved benchmark gap",value:unresolved}],"km",COLORS[4])}</div>${controls}<div class="table-export-wrap"><button type="button" class="csv-download" data-table-csv>CSV</button><div class="table-wrap benchmark-table"><table class="data-table"><thead><tr><th>Reconciliation class</th><th>Length km</th><th>Benchmark share</th><th>Interpretation</th></tr></thead><tbody>${rowsHtml.map(row=>`<tr><td>${esc(row[0])}</td><td>${number(row[1],3)}</td><td>${number(row[2],2)}%</td><td>${esc(row[3])}</td></tr>`).join("")}</tbody></table></div></div></section>`;
+    ])}<div class="chart-grid">${barChart("Authoritative road network composition","DUCAR (152,483.00 km) and National Roads (21,284.02 km) by statutory management class.",[{name:"Community Access Roads",value:official.community},{name:"District Roads",value:official.district},{name:"Urban Roads",value:official.urban},{name:"National Roads",value:official.national},{name:"KCCA Roads",value:official.kcca}],"km",COLORS[0])}${barChart("DUCAR reconciliation coverage","Measured, candidate-expansion and unresolved lengths.",[{name:"Measured register extent",value:verified},{name:"Additional candidate geometry",value:additional},{name:"Unresolved benchmark gap",value:unresolved}],"km",COLORS[4])}</div>${controls}<div class="table-export-wrap"><button type="button" class="csv-download" data-table-csv>CSV</button><div class="table-wrap benchmark-table"><table class="data-table"><thead><tr><th>Reconciliation class</th><th>Length km</th><th>Benchmark share</th><th>Interpretation</th></tr></thead><tbody>${rowsHtml.map(row=>`<tr><td>${esc(row[0])}</td><td>${number(row[1],3)}</td><td>${number(row[2],2)}%</td><td>${esc(row[3])}</td></tr>`).join("")}</tbody></table></div></div></section>`;
   }
   function hotosmValues(dimension) {
     if(dimension==="pavement"){
@@ -939,14 +939,14 @@
     return Number((cache.hotosmAnalysis?.summaries?.[dimension]||[]).find(row=>row.category===category)?.length_km||0);
   }
   function authoritativeNetworkOverview() {
-    if(cache.hotosmAnalysis){const confirmed=confirmedNetwork(),paved=6406.69,unpaved=14877.33,totalKm=173785.00;return `<section class="benchmark-panel authoritative-inventory"><header><div><small>National Road Network AUTHORITATIVE ROAD NETWORK · FY 2026/27</small><h3>Uganda complete vehicular-road geometry</h3><p>National Road Network: 21,284.02 km (6,406.69 km paved, 30.10%; 14,877.33 km unpaved, 69.90%). Total Uganda Road Network: 173,785.00 km.</p></div><button class="pdf-download" data-section-pdf type="button">PDF report</button></header>${metricCards([{label:"Total Uganda Road Network",value:number(totalKm,2)+" km",note:"National + DUCAR combined baseline"},{label:"National Road Network",value:"21,284.02 km",note:"International Trunk 2,604.65 km · National Trunk 2,845.27 km · Primary 15,689.54 km · Expressways 144.56 km"},{label:"National Paved Length",value:number(paved,2)+" km",note:"30.10% of National Road Network"},{label:"National Unpaved Length",value:number(unpaved,2)+" km",note:"69.90% of National Road Network"}])}<div class="chart-grid">${barChart("Functional road classes","All corrected road geometry grouped by National Road Network functional classification.",hotosmValues("functional_class"),"affected km",COLORS[0])}${barChart("National Road surface split","Authoritative Paved (30.10%) and Unpaved (69.90%) National Road baseline.",[{name:"Paved",value:paved},{name:"Unpaved",value:unpaved}],"affected km",COLORS[2])}${barChart("Whole-of-network condition (FY 2025/26)","Good 22,286.23 km (12.83%), Fair 12,794.15 km (7.36%), Poor 138,678.33 km (79.81%).",[{name:"Good",value:22286.23},{name:"Fair",value:12794.15},{name:"Poor",value:138678.33}],"affected km",COLORS[1])}${barChart("National Roads condition (FY 2025/26)","Good 12,610.00 km (59.20%), Fair 7,844.00 km (36.82%), Poor 848.00 km (3.98%).",[{name:"Good",value:12610.00},{name:"Fair",value:7844.00},{name:"Poor",value:848.00}],"affected km",COLORS[4])}</div><div class="method-note">Authoritative public total: 173,785.00 km across all 135 districts, incorporating the 21,284.02 km National Road Network. Condition assessments follow MOBICAP(Road condition assesment tool) and ROMDAS(Roughness and rutting machine based testing) standards.</div></section>`;}
-    const confirmed=confirmedNetwork(),official={ducar:152500.98,urban:35858.00,district:41194.00,community:75404.00};
+    if(cache.hotosmAnalysis){const confirmed=confirmedNetwork(),paved=6406.69,unpaved=14877.33,totalKm=173785.00,ducarBreakdown=[{name:"Community Access Roads",value:75404.00},{name:"District Roads",value:41194.00},{name:"Urban Roads",value:33755.00},{name:"KCCA Roads",value:2130.00}];return `<section class="benchmark-panel authoritative-inventory"><header><div><small>AUTHORITATIVE ROAD NETWORK · FY 2026/27</small><h3>Uganda complete DUCAR &amp; National Road network</h3><p>Total National DUCAR Network: 152,483.00 km (District Roads 41,194.00 km, Urban Roads 33,755.00 km, Community Access Roads 75,404.00 km, KCCA 2,130.00 km). National Roads baseline: 21,284.02 km (6,406.69 km paved, 30.10%; 14,877.33 km unpaved, 69.90%).</p></div><button class="pdf-download" data-section-pdf type="button">PDF report</button></header>${metricCards([{label:"Total National DUCAR Network",value:"152,483.00 km",note:"District 41,194.00 km · Urban 33,755.00 km · CAR 75,404.00 km · KCCA 2,130.00 km"},{label:"National Roads Baseline",value:"21,284.02 km",note:"Paved 6,406.69 km (30.10%) · Unpaved 14,877.33 km (69.90%)"},{label:"Total Uganda Road Network",value:number(totalKm,2)+" km",note:"Complete national & DUCAR inventory across 135 districts"},{label:"District & Community Access",value:"116,598.00 km",note:"District Roads 41,194.00 km · Community Access Roads 75,404.00 km"},{label:"Urban & KCCA Network",value:"35,885.00 km",note:"Urban Roads 33,755.00 km · KCCA 2,130.00 km"}])}<div class="chart-grid">${barChart("DUCAR Network Extent (152,483.00 km)","District (41,194.00 km), Urban (33,755.00 km), Community Access (75,404.00 km) and KCCA (2,130.00 km).",ducarBreakdown,"affected km",COLORS[0])}${barChart("National Roads surface split (21,284.02 km)","Authoritative Paved (30.10%) and Unpaved (69.90%) National Road baseline.",[{name:"Paved",value:paved},{name:"Unpaved",value:unpaved}],"affected km",COLORS[2])}${barChart("Whole-of-network condition (FY 2025/26)","Good 22,286.23 km (12.83%), Fair 12,794.15 km (7.36%), Poor 138,678.33 km (79.81%).",[{name:"Good",value:22286.23},{name:"Fair",value:12794.15},{name:"Poor",value:138678.33}],"affected km",COLORS[1])}${barChart("National Roads condition (FY 2025/26)","Good 12,610.00 km (59.20%), Fair 7,844.00 km (36.82%), Poor 848.00 km (3.98%).",[{name:"Good",value:12610.00},{name:"Fair",value:7844.00},{name:"Poor",value:848.00}],"affected km",COLORS[4])}</div><div class="method-note">Authoritative DUCAR total: 152,483.00 km (District 41,194.00 km, Urban 33,755.00 km, Community Access 75,404.00 km, KCCA 2,130.00 km) alongside the 21,284.02 km National Roads baseline across 135 districts. Condition assessments follow MOBICAP(Road condition assesment tool) and ROMDAS(Roughness and rutting machine based testing) standards.</div></section>`;}
+    const confirmed=confirmedNetwork(),official={ducar:152483.00,district:41194.00,urban:33755.00,community:75404.00,kcca:2130.00};
     return `<section class="benchmark-panel authoritative-inventory"><header><div><small>AUTHORITATIVE NATIONAL ROAD INVENTORY · FY 2026/27</small><h3>Uganda authoritative all-road inventory</h3><p>One approved inventory scope is used consistently across all dashboards, expressed strictly in kilometres (km) and percentages (%).</p></div><button class="pdf-download" data-section-pdf type="button">PDF report</button></header>${metricCards([
+      {label:"Total National DUCAR Network",value:number(official.ducar,2)+" km",note:"District 41,194.00 km · Urban 33,755.00 km · CAR 75,404.00 km · KCCA 2,130.00 km"},
+      {label:"National Roads Baseline",value:"21,284.02 km",note:"6,406.69 km paved (30.10%) · 14,877.33 km unpaved (69.90%)"},
       {label:"Total Uganda Road Network",value:"173,785.00 km",note:"Authoritative national reporting total"},
-      {label:"National Road Network",value:"21,284.02 km",note:"6,406.69 km paved (30.10%) · 14,877.33 km unpaved (69.90%)"},
-      {label:"Administrative districts",value:number(confirmed.districts)+" districts",note:"National administrative coverage"},
-      {label:"DUCAR component",value:number(official.ducar,2)+" km",note:"District, KCCA, City, Community Access, Town Council and Municipal Roads"}
-    ])}<div class="chart-grid">${barChart("Authoritative inventory scope","National and DUCAR components of the 173,785.00 km network.",[{name:"National Roads",value:21284.02},{name:"DUCAR Component",value:official.ducar}],"km",COLORS[0])}${barChart("DUCAR composition","Complete official DUCAR composition by road-management class.",[{name:"Community Access Roads",value:official.community},{name:"District Roads",value:official.district},{name:"Urban Roads",value:official.urban}],"km",COLORS[1])}</div><div class="method-note">Public reporting uses the authoritative 173,785.00 km total network across ${number(confirmed.districts)} districts.</div></section>`;
+      {label:"Administrative districts",value:number(confirmed.districts)+" districts",note:"National administrative coverage"}
+    ])}<div class="chart-grid">${barChart("Authoritative inventory scope","National Roads (21,284.02 km) and DUCAR (152,483.00 km).",[{name:"National Roads",value:21284.02},{name:"DUCAR Network",value:official.ducar}],"km",COLORS[0])}${barChart("DUCAR composition (152,483.00 km)","Complete official DUCAR composition by road-management class.",[{name:"Community Access Roads",value:official.community},{name:"District Roads",value:official.district},{name:"Urban Roads",value:official.urban},{name:"KCCA Roads",value:official.kcca}],"km",COLORS[1])}</div><div class="method-note">Public reporting uses the authoritative 152,483.00 km DUCAR network and 21,284.02 km National Roads baseline across ${number(confirmed.districts)} districts.</div></section>`;
   }
   function authoritativePopulationValues(values, rows) {
     if(hasActiveHeaderFilters())return values;
@@ -1608,7 +1608,7 @@
     const baseButton=document.querySelector('[data-map-tool="basemap"]'),basePopover=document.querySelector(".map-basemap-popover"),closeBases=()=>{if(basePopover)basePopover.hidden=true;baseButton?.setAttribute("aria-expanded","false");};baseButton?.addEventListener("click",event=>{event.stopPropagation();basePopover.hidden=!basePopover.hidden;baseButton.setAttribute("aria-expanded",String(!basePopover.hidden));});document.querySelector("[data-close-basemap]")?.addEventListener("click",closeBases);basePopover?.addEventListener("click",event=>event.stopPropagation());document.addEventListener("click",event=>{if(!basePopover?.contains(event.target)&&!baseButton?.contains(event.target))closeBases();});
     const clearMap=()=>{if(selected){selected.setStyle({weight:selected.options._baseWeight||1.5});selected=null;}if(measureLine){measureLine.remove();measureLine=null;}measureMarkers.clearLayers();measurePoints=[];details.innerHTML=`<div class="map-empty-state"><b>⌖</b><strong>Select Any Country</strong><span>The complete road inventory and management record appears here.</span></div>`;};
     document.querySelectorAll("[data-map-tool]").forEach(button=>button.addEventListener("click",async()=>{const tool=button.dataset.mapTool;if(tool==="basemap")return;if(tool==="zoom-in")map.zoomIn();else if(tool==="zoom-out")map.zoomOut();else if(tool==="pan"){measureMode=false;}else if(tool==="select"){measureMode=false;}else if(tool==="measure"){measureMode=true;}else if(tool==="clear")clearMap();else if(tool==="reset")map.fitBounds(worldExtent,{padding:[8,8],animate:false});else if(tool==="download")downloadElementPng(document.querySelector(".map-stage"),"ducar_global_road_inventory_map.png");else if(tool==="fullscreen"){const workspace=document.getElementById("map-workspace");if(workspace.requestFullscreen)await workspace.requestFullscreen();else workspace.classList.add("map-fullscreen-fallback");setTimeout(()=>{map.invalidateSize();map.fitBounds(worldExtent,{padding:[8,8],animate:false});},120);}else if(tool==="restore"){if(document.fullscreenElement)await document.exitFullscreen();document.getElementById("map-workspace")?.classList.remove("map-fullscreen-fallback");setTimeout(()=>{map.invalidateSize();map.fitBounds(worldExtent,{padding:[8,8],animate:false});},120);}document.querySelectorAll("[data-map-tool]").forEach(item=>item.classList.toggle("active",item===button&&["pan","select","measure"].includes(tool)));}));
-    map.on("mousemove",event=>{const lat=event.latlng.lat,lng=event.latlng.lng;document.getElementById("map-coordinate").textContent=`${Math.abs(lat).toFixed(5)}° ${lat>=0?"N":"S"} · ${Math.abs(lng).toFixed(5)}° ${lng>=0?"E":"W"}`;});map.on("click",event=>{if(!measureMode)return;measurePoints.push(event.latlng);L.circleMarker(event.latlng,{radius:4,color:"#fff",fillColor:"#0a84ff",fillOpacity:1}).addTo(measureMarkers);if(measureLine)measureLine.remove();measureLine=L.polyline(measurePoints,{color:"#64d2ff",weight:2,dashArray:"7 5"}).addTo(map);const km=measurePoints.slice(1).reduce((sum,point,index)=>sum+map.distance(measurePoints[index],point)/1000,0);details.innerHTML=`<div class="selection-title"><small>GLOBAL MEASUREMENT</small><h4>${number(km,2)} km</h4><p>${number(measurePoints.length)} vertices</p></div>`;});
+    map.on("mousemove",event=>{const lat=event.latlng.lat,lng=event.latlng.lng;document.getElementById("map-coordinate").textContent=`${Math.abs(lat).toFixed(5)}° ${lat>=0?"N":"S"} · ${Math.abs(lng).toFixed(5)}° ${lng>=0?"E":"W"}`;});map.on("click",event=>{if(!measureMode)return;measurePoints.push(event.latlng);L.circleMarker(event.latlng,{radius:4,color:"#fff",fillColor:"#0a84ff",fillOpacity:1}).addTo(measureMarkers);if(measureLine)measureLine.remove();measureLine=L.polyline(measurePoints,{color:"#0071E3",weight:2,dashArray:"7 5"}).addTo(map);const km=measurePoints.slice(1).reduce((sum,point,index)=>sum+map.distance(measurePoints[index],point)/1000,0);details.innerHTML=`<div class="selection-title"><small>GLOBAL MEASUREMENT</small><h4>${number(km,2)} km</h4><p>${number(measurePoints.length)} vertices</p></div>`;});
     document.getElementById("map-opacity")?.addEventListener("input",event=>{const opacity=Number(event.target.value)/100;document.getElementById("map-opacity-value").textContent=event.target.value+"%";countryMarkers.forEach(marker=>marker.setStyle({fillOpacity:opacity}));});
     const search=()=>{const query=document.getElementById("map-search").value.trim().toLowerCase();if(!query)return;const row=rows.find(item=>[item.country,item.region,item.lead_institution,item.local_road_manager].some(value=>String(value||"").toLowerCase().includes(query)));if(!row)return void(details.innerHTML=`<div class="map-empty-state"><b>⌕</b><strong>No Matching Country or Institution</strong><span>Try a country, region, Road Network Authority or road authority.</span></div>`);const marker=markerByCountry.get(row.country);if(marker){map.setView(marker.getLatLng(),5);selectCountry(row,marker);}};document.getElementById("map-search-button")?.addEventListener("click",search);document.getElementById("map-search")?.addEventListener("keydown",event=>{if(event.key==="Enter")search();});document.onfullscreenchange=()=>setTimeout(()=>map.invalidateSize(),120);setTimeout(()=>{map.invalidateSize();map.fitBounds(worldExtent,{padding:[8,8],animate:false});},100);
   }
@@ -1689,7 +1689,7 @@
     map.on("mousemove",event=>{const lat=event.latlng.lat,lng=event.latlng.lng;document.getElementById("map-coordinate").textContent=`${Math.abs(lat).toFixed(5)}° ${lat>=0?"N":"S"} · ${Math.abs(lng).toFixed(5)}° ${lng>=0?"E":"W"}`;});
     const refreshRoadWidths=()=>{const refresh=layer=>layer?.eachLayer?.(child=>{const p=child.feature?.properties;if(p&&child.setStyle)child.setStyle({weight:roadWeight(p),dashArray:roadDash(p)});});activeLayers.forEach(refresh);detailLayers.forEach(refresh);refresh(selectedLayer);node.dataset.pavedRoadWidth=roadWeight({pavement_class:"Paved"}).toFixed(2);node.dataset.unpavedRoadWidth=roadWeight({pavement_class:"Unpaved"}).toFixed(2);};let detailUpdateTimer=null;const scheduleDetailUpdate=()=>{clearTimeout(detailUpdateTimer);detailUpdateTimer=setTimeout(updateDetailTiles,80);};
     map.on("moveend",scheduleDetailUpdate);map.on("zoomend",()=>{refreshRoadWidths();scheduleDetailUpdate();});refreshRoadWidths();
-    map.on("click",event=>{if(!measureMode)return;measurePoints.push(event.latlng);L.circleMarker(event.latlng,{radius:4,color:"#fff",fillColor:"#0a84ff",fillOpacity:1}).addTo(measureMarkers);if(measureLine)measureLine.remove();measureLine=L.polyline(measurePoints,{color:"#64d2ff",weight:1.5,dashArray:"7 5"}).addTo(map);const km=measurePoints.slice(1).reduce((sum,p,i)=>sum+map.distance(measurePoints[i],p)/1000,0);details.innerHTML=`<div class="selection-title"><small>MEASUREMENT REPORT</small><h4>${number(km,3)} km</h4><p>${measurePoints.length} measurement vertices · double-click to finish</p></div><div class="selection-insights"><span><b>${number(km*1000,0)} m</b>Distance</span><span><b>${number(measurePoints.length)}</b>Vertices</span><span><b>${number(map.getZoom())}</b>Map zoom</span></div>`;});
+    map.on("click",event=>{if(!measureMode)return;measurePoints.push(event.latlng);L.circleMarker(event.latlng,{radius:4,color:"#fff",fillColor:"#0a84ff",fillOpacity:1}).addTo(measureMarkers);if(measureLine)measureLine.remove();measureLine=L.polyline(measurePoints,{color:"#0071E3",weight:1.5,dashArray:"7 5"}).addTo(map);const km=measurePoints.slice(1).reduce((sum,p,i)=>sum+map.distance(measurePoints[i],p)/1000,0);details.innerHTML=`<div class="selection-title"><small>MEASUREMENT REPORT</small><h4>${number(km,3)} km</h4><p>${measurePoints.length} measurement vertices · double-click to finish</p></div><div class="selection-insights"><span><b>${number(km*1000,0)} m</b>Distance</span><span><b>${number(measurePoints.length)}</b>Vertices</span><span><b>${number(map.getZoom())}</b>Map zoom</span></div>`;});
     map.on("dblclick",()=>{if(measureMode)setTool("pan");});
     document.getElementById("map-opacity")?.addEventListener("input",event=>{document.getElementById("map-opacity-value").textContent=event.target.value+"%";activeLayers.forEach((layer,id)=>{if(configs[id])layer.setStyle?.({opacity:Number(event.target.value)/100});});detailLayers.forEach(layer=>layer.setStyle?.({opacity:Number(event.target.value)/100}));});
     const search=()=>{const query=document.getElementById("map-search").value.trim().toLowerCase();if(!query)return;let kind="Road",feature=cache.mapRoads.features.find(item=>{const p=merged(item);return [p.link_id,p.road_name,p.district].some(value=>String(value||"").toLowerCase().includes(query));});if(!feature){kind="HOTOSM road group";feature=(cache.hotosmMap?.features||[]).find(item=>[item.properties.source_group_id,item.properties.route_id,item.properties.road_name,item.properties.district,item.properties.highway,item.properties.road_management_class].some(value=>String(value||"").toLowerCase().includes(query)));}if(!feature&&cache.nationalMap){kind="Official national road";feature=(cache.nationalMap.features||[]).find(item=>[item.properties.link_id,item.properties.source_link_id,item.properties.road_number,item.properties.road_name,item.properties.maintenance_station].some(value=>String(value||"").toLowerCase().includes(query)));}if(feature){setTool("select");const temp=L.geoJSON(feature);map.fitBounds(temp.getBounds(),{maxZoom:15,padding:[50,50]});const properties=kind==="Road"?merged(feature):{...feature.properties,name:kind==="Official national road"?feature.properties.link_id:feature.properties.source_group_id};selectFeature(kind,properties,feature,null);}else{details.innerHTML=`<div class="map-empty-state"><b>⌕</b><strong>No Matching Road Found</strong><span>Try a Link ID, road number, road name, district or route ID.</span></div>`;}};
@@ -1868,7 +1868,7 @@
     const height=Math.max(760,650+Math.ceil(groups.data.length/6)*92),colors={root:"#0071E3",section:"#16A34A",process:"#D97706",data:"#7C3AED"};
     const paths=edges.map((edge,index)=>{const a=positions.get(edge.from),b=positions.get(edge.to);if(!a||!b)return "";const middle=(a.y+b.y)/2;return `<path class="mind-edge" data-edge="${index}" style="--edge-index:${index}" d="M ${a.x} ${a.y+24} C ${a.x} ${middle}, ${b.x} ${middle}, ${b.x} ${b.y-24}"/>`;}).join("");
     const nodeSvg=nodes.map((node,index)=>{const p=positions.get(node.id);if(!p)return "";const connected=edges.filter(edge=>edge.from===node.id||edge.to===node.id).length,detail=`${connected} direct relationships`;return `<g class="mind-svg-node mind-${esc(node.type)}" style="--node-index:${index}" data-mind-node="${esc(node.id)}" data-label="${esc(node.label)}" data-detail="${esc(detail)}" data-type="${esc(node.type)}" tabindex="0" role="button" aria-label="${esc(node.label)}"><rect x="${p.x-82}" y="${p.y-25}" width="164" height="50" rx="12" style="--node-color:${colors[node.type]||"#64d2ff"}"/><text x="${p.x}" y="${p.y-3}">${esc(node.label.length>25?node.label.slice(0,24)+"…":node.label)}</text><text class="mind-node-meta" x="${p.x}" y="${p.y+13}">${esc(node.type)}</text><title>${esc(node.label)} · ${esc(detail)}</title></g>`;}).join("");
-    return `<article class="matrix-card admin-block" style="margin-bottom:18px"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px"><div><small style="color:#0071E3;font-weight:700;letter-spacing:.05em">PLATFORM DOCUMENTATION</small><h3 style="margin:4px 0 0;color:#0F172A">DUCAR View-Only Architecture &amp; Standards</h3></div><span style="padding:4px 10px;border-radius:999px;background:#EFF6FF;color:#0071E3;font-size:12px;font-weight:600">Vision 2040 · Metric · dd/mm/yyyy</span></div><p style="color:#334155;margin:0 0 12px">NATIONAL TRANSPORT GIS ENTERPRISE (National Road Network), NATIONAL ROAD NETWORK ADMINISTRATION view-only decision support platform covering the 173,785.00 km Total Uganda Road Network, 21,284.02 km National Road Network (6,406.69 km paved and 14,877.33 km unpaved), 552 bridges and 452 major culverts.</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px"><div style="padding:12px;border:1px solid #E2E8F0;border-radius:10px;background:#F8FAFC"><strong style="color:#0F172A;font-size:13px">Survey Instrumentation</strong><p style="margin:6px 0 0;font-size:12px;color:#475569">Condition assessments follow MOBICAP(Road condition assesment tool) and ROMDAS(Roughness and rutting machine based testing) standards.</p></div><div style="padding:12px;border:1px solid #E2E8F0;border-radius:10px;background:#F8FAFC"><strong style="color:#0F172A;font-size:13px">Reporting Units &amp; Horizon</strong><p style="margin:6px 0 0;font-size:12px;color:#475569">All extent and allocation figures are reported strictly in kilometres (km) and percentages (%), projected to Vision 2040 with dd/mm/yyyy dates.</p></div><div style="padding:12px;border:1px solid #E2E8F0;border-radius:10px;background:#F8FAFC"><strong style="color:#0F172A;font-size:13px">Geospatial Basemap</strong><p style="margin:6px 0 0;font-size:12px;color:#475569">All interactive maps use Esri World Imagery with Hybrid Boundaries, Places and Transportation overlays.</p></div></div></article>` + `<section class="platform-map"><header><div><small>PLATFORM DOCUMENTATION · INTERACTIVE MIND MAP</small><h3>DUCAR Platform Mind Map</h3><p>System sections, governed data stores, spatial joins, models, decision engines and reporting paths.</p></div><strong>${number(nodes.length)} nodes · ${number(edges.length)} cross-links</strong></header><div class="mind-map-layout"><div class="mind-schematic"><div class="mind-map-key"><span class="key-root">Platform</span><span class="key-section">Sections</span><span class="key-process">Algorithms & decisions</span><span class="key-data">Data stores</span></div><svg class="platform-mind-svg" viewBox="0 0 1200 ${height}" role="img" aria-label="Interactive DUCAR platform architecture mind map"><defs><marker id="mind-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z"/></marker></defs><g class="mind-edges">${paths}</g><g class="mind-nodes">${nodeSvg}</g></svg></div><aside class="mind-inspector" aria-live="polite"><small>SELECTED PLATFORM NODE</small><strong>${esc(rootNode.label)}</strong><span>${esc(mind.record_policy||"Select any node to inspect its role and connected platform paths.")}</span><p>Click or focus a node. Connected paths remain visible while the selected node is highlighted.</p></aside></div></section>`;
+    return `<article class="matrix-card admin-block" style="margin-bottom:18px"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:10px"><div><small style="color:#0071E3;font-weight:700;letter-spacing:.05em">PLATFORM DOCUMENTATION</small><h3 style="margin:4px 0 0;color:#0F172A">DUCAR View-Only Architecture &amp; Standards</h3></div><span style="padding:4px 10px;border-radius:999px;background:#EFF6FF;color:#0071E3;font-size:12px;font-weight:600">Vision 2040 · Metric · dd/mm/yyyy</span></div><p style="color:#334155;margin:0 0 12px">Pure view-only decision support platform covering the 152,483.00 km National DUCAR Network (District Roads 41,194.00 km, Urban Roads 33,755.00 km, Community Access Roads 75,404.00 km, KCCA 2,130.00 km), the 21,284.02 km National Roads baseline (6,406.69 km paved and 14,877.33 km unpaved), 552 bridges and 452 major culverts.</p><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px"><div style="padding:12px;border:1px solid #E2E8F0;border-radius:10px;background:#F8FAFC"><strong style="color:#0F172A;font-size:13px">Survey Instrumentation</strong><p style="margin:6px 0 0;font-size:12px;color:#475569">Condition assessments follow MOBICAP(Road condition assesment tool) and ROMDAS(Roughness and rutting machine based testing) standards.</p></div><div style="padding:12px;border:1px solid #E2E8F0;border-radius:10px;background:#F8FAFC"><strong style="color:#0F172A;font-size:13px">Reporting Units &amp; Horizon</strong><p style="margin:6px 0 0;font-size:12px;color:#475569">All extent and allocation figures are reported strictly in kilometres (km) and percentages (%), projected to Vision 2040 with dd/mm/yyyy dates.</p></div><div style="padding:12px;border:1px solid #E2E8F0;border-radius:10px;background:#F8FAFC"><strong style="color:#0F172A;font-size:13px">Geospatial Basemap</strong><p style="margin:6px 0 0;font-size:12px;color:#475569">All interactive maps use Esri World Imagery with Hybrid Boundaries, Places and Transportation overlays.</p></div></div></article>` + `<section class="platform-map"><header><div><small>PLATFORM DOCUMENTATION · INTERACTIVE MIND MAP</small><h3>DUCAR Platform Mind Map</h3><p>System sections, governed data stores, spatial joins, models, decision engines and reporting paths.</p></div><strong>${number(nodes.length)} nodes · ${number(edges.length)} cross-links</strong></header><div class="mind-map-layout"><div class="mind-schematic"><div class="mind-map-key"><span class="key-root">Platform</span><span class="key-section">Sections</span><span class="key-process">Algorithms & decisions</span><span class="key-data">Data stores</span></div><svg class="platform-mind-svg" viewBox="0 0 1200 ${height}" role="img" aria-label="Interactive DUCAR platform architecture mind map"><defs><marker id="mind-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z"/></marker></defs><g class="mind-edges">${paths}</g><g class="mind-nodes">${nodeSvg}</g></svg></div><aside class="mind-inspector" aria-live="polite"><small>SELECTED PLATFORM NODE</small><strong>${esc(rootNode.label)}</strong><span>${esc(mind.record_policy||"Select any node to inspect its role and connected platform paths.")}</span><p>Click or focus a node. Connected paths remain visible while the selected node is highlighted.</p></aside></div></section>`;
   }
   function initAdminMindMap(){
     const map=root.querySelector(".platform-mind-svg"),inspector=root.querySelector(".mind-inspector");if(!map||!inspector)return;
@@ -2214,92 +2214,96 @@
     const totalBudget = IBP_PROJECTS_DATA.reduce((sum, p) => sum + p.budget_bn, 0).toFixed(1);
     const avgPhys = (IBP_PROJECTS_DATA.reduce((sum, p) => sum + p.physical_pct, 0) / totalProj).toFixed(1);
     const activeCount = IBP_PROJECTS_DATA.filter(p => p.status === 'Active').length;
+    const fmtDate = (iso) => {
+      const parts = String(iso || "").split("-");
+      return parts.length === 3 ? `${parts[2]}/${parts[1]}/${parts[0]}` : iso;
+    };
 
     const fyDates = [...new Set(IBP_PROJECTS_DATA.map(p => p.last_submission_date.substring(0, 4)))].sort();
 
     return `
       <section class="analytics-workbook ibp-register-section" aria-labelledby="ibp-register-title">
-        <div class="analytics-intro" style="margin-bottom: 24px;">
+        <div class="analytics-intro" style="margin-bottom: 16px;">
           <div>
-            <small style="color: #00f3ff; font-weight: 700; letter-spacing: 1px;">INTEGRATED BANK OF PROJECTS (IBP) GAZETTED REGISTER</small>
-            <h2 id="ibp-register-title" style="margin: 6px 0; color: #fff; font-size: 1.5rem;">PIMS Integrated Bank of Projects Register</h2>
-            <p style="color: #94a3b8; font-size: 0.9rem;">Source: Public Investment Plan FY2025/26-2027/28, Road Network Authority of Finance, Planning & Economic Development (ibp.finance.go.ug)</p>
+            <small style="color: #0071E3; font-weight: 700; letter-spacing: 0.06em;">INTEGRATED BANK OF PROJECTS (IBP) GAZETTED REGISTER</small>
+            <h2 id="ibp-register-title" style="margin: 6px 0; color: #0F172A; font-size: 1.4rem;">PIMS Integrated Bank of Projects Register</h2>
+            <p style="color: #475569; font-size: 0.88rem;">Source: Public Investment Plan FY 2025/26 to FY 2027/28 (ibp.finance.go.ug)</p>
           </div>
           <div style="display: flex; gap: 12px;">
-            <button onclick="window.downloadIBPCSV()" style="background: rgba(0, 243, 255, 0.15); border: 1px solid #00f3ff; color: #00f3ff; padding: 10px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+            <button onclick="window.downloadIBPCSV()" class="studio-button primary" style="background: #0071E3; border: 1px solid #0071E3; color: #FFFFFF; padding: 10px 18px; border-radius: 10px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px;">
               Export IBP Register CSV
             </button>
           </div>
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px;">
-          <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(0, 243, 255, 0.3); border-radius: 12px; padding: 16px;">
-            <small style="color: #94a3b8; font-weight: 600;">TOTAL GAZETTED PROJECTS</small>
-            <div style="font-size: 1.8rem; font-weight: 800; color: #00f3ff; margin-top: 4px;">${totalProj} Projects</div>
-            <span style="font-size: 0.78rem; color: #56e879;">Vote 016 (National Road Network) Sector</span>
-          </div>
-          <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(0, 255, 102, 0.3); border-radius: 12px; padding: 16px;">
-            <small style="color: #94a3b8; font-weight: 600;">APPROVED FY25/26 BUDGET</small>
-            <div style="font-size: 1.8rem; font-weight: 800; color: #278a50; margin-top: 4px;">UGX ${totalBudget} Bn</div>
-            <span style="font-size: 0.78rem; color: #94a3b8;">MTEF Allocation</span>
-          </div>
-          <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 0, 234, 0.3); border-radius: 12px; padding: 16px;">
-            <small style="color: #94a3b8; font-weight: 600;">AVG PHYSICAL PROGRESS</small>
-            <div style="font-size: 1.8rem; font-weight: 800; color: #a4478f; margin-top: 4px;">${avgPhys}%</div>
-            <span style="font-size: 0.78rem; color: #94a3b8;">Weighted Completion</span>
-          </div>
-          <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 153, 0, 0.3); border-radius: 12px; padding: 16px;">
-            <small style="color: #94a3b8; font-weight: 600;">ACTIVE IMPLEMENTATION</small>
-            <div style="font-size: 1.8rem; font-weight: 800; color: #c47a13; margin-top: 4px;">${activeCount} Active</div>
-            <span style="font-size: 0.78rem; color: #94a3b8;">${totalProj - activeCount} In Planning</span>
-          </div>
+        <div class="metric-grid" style="margin-bottom: 16px;">
+          <article class="metric-card">
+            <small>TOTAL GAZETTED PROJECTS</small>
+            <strong style="color: #0071E3;">${totalProj} Projects</strong>
+            <em>National Road Network Sector</em>
+          </article>
+          <article class="metric-card">
+            <small>APPROVED FY 2025/26 BUDGET</small>
+            <strong style="color: #16A34A;">UGX ${totalBudget} Bn</strong>
+            <em>MTEF Allocation</em>
+          </article>
+          <article class="metric-card">
+            <small>AVG PHYSICAL PROGRESS</small>
+            <strong style="color: #7C3AED;">${avgPhys}%</strong>
+            <em>Weighted Completion</em>
+          </article>
+          <article class="metric-card">
+            <small>ACTIVE IMPLEMENTATION</small>
+            <strong style="color: #D97706;">${activeCount} Active</strong>
+            <em>${totalProj - activeCount} In Planning</em>
+          </article>
         </div>
 
-        <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+        <div class="analytics-block" style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 14px; padding: 16px; margin-bottom: 16px;">
           <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
-            <span style="font-size: 0.85rem; font-weight: 700; color: #cbd5e1; text-transform: uppercase; letter-spacing: 0.5px;">Filter by last IBP submission/update:</span>
-            <div style="display: flex; gap: 8px;">
-              <button class="ibp-filter-btn active" data-ibp-year="all" type="button">All Submissions</button>
-              ${fyDates.map(yr => `<button class="ibp-filter-btn" data-ibp-year="${yr}" type="button">${yr} Submissions</button>`).join("")}
+            <span style="font-size: 0.82rem; font-weight: 700; color: #334155; text-transform: uppercase; letter-spacing: 0.04em;">Filter by last IBP submission/update:</span>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <button class="ibp-filter-btn studio-button active" data-ibp-year="all" type="button">All Submissions</button>
+              ${fyDates.map(yr => `<button class="ibp-filter-btn studio-button" data-ibp-year="${yr}" type="button">${yr} Submissions</button>`).join("")}
             </div>
           </div>
 
           <div class="table-wrap ibp-register-wrap" style="overflow-x: auto;">
-            <table class="data-table ibp-register-table" style="width: 100%; border-collapse: collapse; font-size: 0.85rem; color: #e2e8f0; text-align: left;">
+            <table class="data-table ibp-register-table" style="width: 100%; border-collapse: collapse; font-size: 0.85rem; color: #0F172A; text-align: left;">
               <thead>
-                <tr style="background: rgba(0, 0, 0, 0.4); border-bottom: 2px solid rgba(0, 243, 255, 0.3);">
-                  <th style="padding: 12px 10px; color: #00f3ff;">PIP Code</th>
-                  <th style="padding: 12px 10px; color: #00f3ff;">Project Name</th>
-                  <th style="padding: 12px 10px; color: #00f3ff;">Region</th>
-                  <th style="padding: 12px 10px; color: #00f3ff;">Class</th>
-                  <th style="padding: 12px 10px; color: #00f3ff;">Length (km)</th>
-                  <th style="padding: 12px 10px; color: #00f3ff;">Approved FY25/26 (UGX Bn)</th>
-                  <th style="padding: 12px 10px; color: #00f3ff;">Funder</th>
-                  <th style="padding: 12px 10px; color: #00f3ff;">Status</th>
-                  <th style="padding: 12px 10px; color: #00f3ff;">Physical %</th>
-                  <th style="padding: 12px 10px; color: #00f3ff;">Last IBP Submission/Update</th>
+                <tr>
+                  <th>PIP Code</th>
+                  <th>Project Name</th>
+                  <th>Region</th>
+                  <th>Class</th>
+                  <th>Length (km)</th>
+                  <th>Approved FY25/26 (UGX Bn)</th>
+                  <th>Funder</th>
+                  <th>Status</th>
+                  <th>Physical %</th>
+                  <th>Last IBP Submission/Update</th>
                 </tr>
               </thead>
               <tbody>
                 ${IBP_PROJECTS_DATA.map(p => `
                   <tr data-ibp-record-year="${p.last_submission_date.substring(0,4)}">
-                    <td style="padding: 10px; font-family: monospace; color: #278a50; font-weight: 700;">${p.pip}</td>
-                    <td style="padding: 10px; font-weight: 600; color: #fff;">${p.name}</td>
-                    <td style="padding: 10px;">${p.region}</td>
-                    <td style="padding: 10px;">${p.road_class}</td>
-                    <td style="padding: 10px; font-weight: 600;">${p.length_km} km</td>
-                    <td style="padding: 10px; font-weight: 700; color: #278a50;">UGX ${p.budget_bn} Bn</td>
-                    <td style="padding: 10px;">${p.funder}</td>
-                    <td style="padding: 10px;"><span style="padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 700; background: ${p.status === 'Active' ? 'rgba(0, 255, 102, 0.2)' : 'rgba(255, 153, 0, 0.2)'}; color: ${p.status === 'Active' ? '#278a50' : '#c47a13'}; border: 1px solid ${p.status === 'Active' ? '#278a50' : '#c47a13'}">${p.status}</span></td>
-                    <td style="padding: 10px;">
-                      <div style="display: flex; align-items: center; gap: 8px;">
-                        <div style="flex: 1; background: rgba(255,255,255,0.1); height: 6px; border-radius: 3px; overflow: hidden;">
-                          <div style="width: ${p.physical_pct}%; background: #00f3ff; height: 100%;"></div>
+                    <td style="font-family: monospace; color: #0071E3; font-weight: 700;">${p.pip}</td>
+                    <td style="font-weight: 600; color: #0F172A;">${p.name}</td>
+                    <td>${p.region}</td>
+                    <td>${p.road_class}</td>
+                    <td style="font-weight: 600;">${p.length_km} km</td>
+                    <td style="font-weight: 700; color: #16A34A;">UGX ${p.budget_bn} Bn</td>
+                    <td>${p.funder}</td>
+                    <td><span style="padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: 700; background: ${p.status === 'Active' ? '#DCFCE7' : '#FEF3C7'}; color: ${p.status === 'Active' ? '#166534' : '#92400E'}; border: 1px solid ${p.status === 'Active' ? '#86EFAC' : '#FCD34D'}">${p.status}</span></td>
+                    <td>
+                      <div style="display: flex; align-items: center; gap: 8px; min-width: 110px;">
+                        <div style="flex: 1; background: #E2E8F0; height: 6px; border-radius: 3px; overflow: hidden;">
+                          <div style="width: ${p.physical_pct}%; background: #0071E3; height: 100%;"></div>
                         </div>
-                        <span style="font-weight: 700; font-size: 0.8rem; min-width: 32px;">${p.physical_pct}%</span>
+                        <span style="font-weight: 700; font-size: 0.8rem; min-width: 34px; color: #0F172A;">${p.physical_pct}%</span>
                       </div>
                     </td>
-                    <td style="padding: 10px; font-family: monospace; color: #94a3b8;">${p.last_submission_date}</td>
+                    <td style="font-family: monospace; color: #475569;">${fmtDate(p.last_submission_date)}</td>
                   </tr>
                 `).join("")}
               </tbody>

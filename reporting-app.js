@@ -7,7 +7,7 @@
   const KPI_DATA = [
     { label: "Total Uganda Road Network", value: "173,785.00 km", note: "National + District + Urban + Community Access" },
     { label: "National Road Network", value: "21,284.02 km", note: "Paved 6,406.69 km (30.10%) · Unpaved 14,877.33 km (69.90%)" },
-    { label: "DUCAR Network Extent", value: "152,500.98 km", note: "District, Town Council, Municipal, City, KCCA & CAR" },
+    { label: "DUCAR Network Extent", value: "152,483.00 km", note: "District 41,194.00 km · Urban 33,755.00 km · CAR 75,404.00 km · KCCA 2,130.00 km" },
     { label: "Bridges (Authoritative)", value: "552 bridges", note: "Good 247 · Satisfactory 71 · Marginal 162 · Poor 52 · Critical 13 · UC 7" },
     { label: "Major Culverts (Authoritative)", value: "452 major culverts", note: "Good 403 · Satisfactory 39 · Marginal 4 · Poor 1 · Critical 4 · UC 1" },
     { label: "Administrative Coverage", value: "135 districts", note: "6 Maintenance Regions · 23 Maintenance Stations" }
@@ -20,15 +20,16 @@
   ];
 
   const SURFACE_BARS = [
-    { label: "National Paved (Bituminous)", km: 6406.69, pct: 30.10, color: "#0071E3" },
-    { label: "National Unpaved (Gravel / Earth)", km: 14877.33, pct: 69.90, color: "#D97706" },
-    { label: "International Trunk Roads", km: 2604.65, pct: 12.24, color: "#7C3AED" },
-    { label: "National Trunk Roads", km: 2845.27, pct: 13.37, color: "#0D9488" },
-    { label: "Primary Roads", km: 15689.54, pct: 73.72, color: "#16A34A" },
-    { label: "Expressways", km: 144.56, pct: 0.68, color: "#475569" }
+    { label: "Community Access Roads (DUCAR)", km: 75404.00, pct: 49.45, color: "#16A34A" },
+    { label: "District Roads (DUCAR)", km: 41194.00, pct: 27.02, color: "#0071E3" },
+    { label: "Urban Roads (DUCAR)", km: 33755.00, pct: 22.14, color: "#7C3AED" },
+    { label: "KCCA Roads (DUCAR)", km: 2130.00, pct: 1.40, color: "#0D9488" },
+    { label: "National Paved (Bituminous)", km: 6406.69, pct: 30.10, color: "#0284C7" },
+    { label: "National Unpaved (Gravel / Earth)", km: 14877.33, pct: 69.90, color: "#D97706" }
   ];
 
   const QUALITY_ITEMS = [
+    "DUCAR Network Extent: 152,483.00 km (District Roads 41,194.00 km, Urban Roads 33,755.00 km, Community Access Roads 75,404.00 km, KCCA 2,130.00 km).",
     "National Road Network authoritative baseline: 21,284.02 km (Paved 6,406.69 km / 30.10%; Unpaved 14,877.33 km / 69.90%).",
     "National Roads condition (FY 2025/26): Good 12,610.00 km (59.20%), Fair 7,844.00 km (36.82%), Poor 848.00 km (3.98%).",
     "Whole-of-Network condition (FY 2025/26): Good 22,286.23 km (12.83%), Fair 12,794.15 km (7.36%), Poor 138,678.33 km (79.81%).",
@@ -85,7 +86,7 @@
     if (cv) cv.innerHTML = `<ul style="margin:8px 0 0;padding-left:18px;color:#334155;line-height:1.6">${CAVEATS.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>`;
 
     const upd = document.getElementById("updated");
-    if (upd) upd.textContent = "23/11/2026";
+    if (upd) upd.textContent = "24/11/2026";
   }
 
   async function fetchGzJson(url) {

@@ -521,7 +521,7 @@
           if (visible.length === items.length) {
             radialEl.style.background = origGradient;
           } else if (visible.length === 0) {
-            radialEl.style.background = "#303034";
+            radialEl.style.background = "#E2E8F0";
           } else {
             var small = legend.querySelectorAll(":scope > span > small");
             var vals = [];
